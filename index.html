@@ -72,18 +72,18 @@
               let stamped = false;
               stampLocations.forEach(location => {
                 const distance = calculateDistance(userLocation, location);
-                if (distance < 1000 && !stamped) {
-                  if (!stampedHistory.includes(`${location.lat}-${location.lng}`)) {
-                    alert('Stamped!');
-                    stamped = true;
+                const locationKey = `${location.lat}-${location.lng}`;
 
-                    // スタンプが完了した場所の位置情報を履歴に追加
-                    stampedHistory.push(`${location.lat}-${location.lng}`);
+                if (distance < 1000 && !stamped && !stampedHistory.includes(locationKey)) {
+                  alert('Stamped!');
+                  stamped = true;
 
-                    // 履歴を表示
-                    const stampedInfo = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
-                    completedStamps.innerHTML += `<p>${stampedInfo}</p>`;
-                  }
+                  // スタンプが完了した場所の位置情報を履歴に追加
+                  stampedHistory.push(locationKey);
+
+                  // 履歴を表示
+                  const stampedInfo = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
+                  completedStamps.innerHTML += `<p>${stampedInfo}</p>`;
                 }
               });
             },
