@@ -36,7 +36,6 @@
       padding: 20px;
       border-radius: 10px;
       text-align: center;
-      display: none;
     }
 
     #startGameConfirmation button {
@@ -54,20 +53,18 @@
   <!-- ゲーム開始の確認画面 -->
   <div id="startGameConfirmation">
     <p>このゲームを始めますか？</p>
-    <button onclick="confirmStartGame()">はい</button>
+    <button onclick="startGame()">はい</button>
   </div>
 
   <!-- ゲームのスクリプト -->
   <script>
-    function confirmStartGame() {
+    function startGame() {
       document.getElementById('startGameConfirmation').style.display = 'none';
       initMap();
-    }
 
-    // ページ読み込み時に確認画面を表示
-    window.onload = function() {
-      document.getElementById('startGameConfirmation').style.display = 'block';
-    };
+      // 1秒ごとに位置情報を更新
+      setInterval(updateUserLocation, 1000);
+    }
 
     // スタンプの位置情報
     const stampLocations = [
@@ -90,69 +87,50 @@
     // 最後にダイアログを表示した時刻
     let lastDialogTime = 0;
 
-    // ページが読み込まれた時に呼ばれる関数
-    function initMap() {
-      // マップ要素とcompletedStamps要素を取得
-      const map = document.getElementById('map');
-      const completedStamps = document.getElementById('completedStamps');
+    // ユーザーの位置情報を更新する関数
+    function updateUserLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            // ユーザーの位置情報
+            const userLocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            };
 
-      // ユーザーの位置情報を更新する関数
-      function updateUserLocation() {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            position => {
-              // ユーザーの位置情報
-              const userLocation = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude,
-              };
-
-              // マップにユーザーの位置情報を表示
-              map.innerHTML = `<p>User's Location: Lat ${userLocation.lat}, Lng ${userLocation.lng}</p>`;
-
-              // ダイアログ表示の制御
-              const currentTime = new Date().getTime();
-              if (currentTime - lastDialogTime >= dialogInterval) {
-                // ユーザーがスタンプの近くにいるか確認
-                let stamped = false;
-                stampLocations.forEach(location => {
-                  const distance = calculateDistance(userLocation, location);
-                  const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
+            // ダイアログ表示の制御
+            const currentTime = new Date().getTime();
+            if (currentTime - lastDialogTime >= dialogInterval) {
+              // ユーザーがスタンプの近くにいるか確認
+              let stamped = false;
+              stampLocations.forEach(location => {
+                const distance = calculateDistance(userLocation, location);
+                const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
                 //ユーザーがスタンプの近くにいて、スタンプの位置との距離が100m未満であるかの判定をしている
-                  if (distance < 100 && !stamped && !stampedHistory.includes(locationKey)) {
-                    showStampedDialog(location);
-                    stamped = true;
-                  }
-                });
-              }
-            },
-            error => {
-              console.error('Error getting user location:', error);
+                if (distance < 100 && !stamped && !stampedHistory.includes(locationKey)) {
+                  alert('Stamped!');
+                  stamped = true;
+
+                  // スタンプが完了した場所の位置情報を履歴に追加
+                  stampedHistory.push(locationKey);
+
+                  // 履歴を表示
+                  const stampedInfo = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
+                  document.getElementById('completedStamps').innerHTML += `<p>${stampedInfo}</p>`;
+
+                  // ダイアログを表示した時刻を更新
+                  lastDialogTime = currentTime;
+                }
+              });
             }
-          );
-        } else {
-          console.error('Geolocation is not supported by this browser.');
-        }
+          },
+          error => {
+            console.error('Error getting user location:', error);
+          }
+        );
+      } else {
+        console.error('Geolocation is not supported by this browser.');
       }
-
-      // スタンプが完了した場所のダイアログを表示する関数
-      function showStampedDialog(location) {
-        const stampedInfo = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
-        completedStamps.innerHTML += `<p>${stampedInfo}</p>`;
-        
-        // スタンプが完了した場所の位置情報を履歴に追加
-        const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
-        stampedHistory.push(locationKey);
-
-        // ダイアログを表示した時刻を更新
-        lastDialogTime = new Date().getTime();
-      }
-
-      // 最初の位置情報を取得
-      updateUserLocation();
-
-      // 1秒ごとに位置情報を更新
-      setInterval(updateUserLocation, 1000);
     }
 
     // 2つの地点間の距離を計算する関数
@@ -179,6 +157,6 @@
     }
   </script>
   <!-- Google Maps JavaScript API の読み込み -->
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=startGame"></script>
 </body>
 </html>
