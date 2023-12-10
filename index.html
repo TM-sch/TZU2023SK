@@ -5,12 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>宇宙人発見伝</title>
   <style>
-    #map {
-      height: 400px;
-      width: 100%;
+    body {
+      background-color: #0084ff;
+      margin: 0;
+      padding: 0;
     }
-    body{
-        background-color: #0084ff;
+
+    h1 {
+      text-align: center;
+      color: white;
+    }
+
+    #map {
+      height: 60vh; /* 画面の高さの60%に設定 */
+      width: 100%;
     }
   </style>
 </head>
@@ -20,13 +28,14 @@
   <script>
     // スタンプの位置情報
     const stampLocations = [
-      { lat: 35.6068, lng: 139.3319},//相原駅
-      { lat: 35.5926, lng: 139.4081},//お試し
-      { lat: 35.6152, lng: 139.3349},//東京造形大学1号館
-      { lat: 35.6157, lng: 139.3333},//東京造形大学7号館
-      { lat: 35.6167, lng: 139.3334},//東京造形大学10号館
+      { lat: 35.6068, lng: 139.3319 }, // 相原駅
+      { lat: 35.5926, lng: 139.4081 }, // お試し
+      { lat: 35.6152, lng: 139.3349 }, // 東京造形大学1号館
+      { lat: 35.6157, lng: 139.3333 }, // 東京造形大学7号館
+      { lat: 35.6167, lng: 139.3334 }, // 東京造形大学10号館
       // 必要に応じて他の位置を追加
-      //小数第4位を誤差する(0.0001ずれる)と10mの誤差(経度、緯度両方で14m)になる。よって少数第4位までは確実に記載する
+      // 小数第4位を誤差する(0.0001ずれる)と10mの誤差(経度、緯度両方で14m)になる。
+      // よって少数第4位までは確実に記載する
     ];
 
     // ページが読み込まれた時に呼ばれる関数
@@ -43,6 +52,7 @@
               lat: position.coords.latitude,
               lng: position.coords.longitude,
             };
+
             // マップにユーザーの位置情報を表示
             map.innerHTML = `<p>User's Location: Lat ${userLocation.lat}, Lng ${userLocation.lng}</p>`;
 
