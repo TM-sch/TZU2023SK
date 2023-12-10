@@ -29,7 +29,7 @@
   </style>
 </head>
 <body>
-  <h1>Stamp Rally</h1>
+  <h1>スタンプラリー</h1>
   <div id="map"></div>
   <div id="completedStamps"></div>
   <script>
@@ -45,8 +45,8 @@
       // よって少数第4位までは確実に記載する
     ];
 
-    // 前回の位置情報
-    let prevUserLocation = null;
+    // スタンプの履歴
+    const stampedHistory = [];
 
     // ページが読み込まれた時に呼ばれる関数
     function initMap() {
@@ -68,25 +68,24 @@
               // マップにユーザーの位置情報を表示
               map.innerHTML = `<p>User's Location: Lat ${userLocation.lat}, Lng ${userLocation.lng}</p>`;
 
-              // 前回の位置情報が存在し、現在の位置情報が変化している場合にのみアクション実行
-              if (prevUserLocation && !areLocationsEqual(prevUserLocation, userLocation)) {
-                // ユーザーがスタンプの近くにいるか確認
-                let stamped = false;
-                stampLocations.forEach(location => {
-                  const distance = calculateDistance(userLocation, location);
-                  if (distance < 1000 && !stamped) {
+              // ユーザーがスタンプの近くにいるか確認
+              let stamped = false;
+              stampLocations.forEach(location => {
+                const distance = calculateDistance(userLocation, location);
+                if (distance < 1000 && !stamped) {
+                  if (!stampedHistory.includes(`${location.lat}-${location.lng}`)) {
+                    alert('Stamped!');
                     stamped = true;
 
-                    // stamped!が完了した場所の位置情報を表示
-                    const stampedInfo = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
-                    completedStamps.innerHTML = `<p>${stampedInfo}</p>`;
-                    document.body.insertAdjacentHTML('beforeend', `<p>${stampedInfo}</p>`);
-                  }
-                });
-              }
+                    // スタンプが完了した場所の位置情報を履歴に追加
+                    stampedHistory.push(`${location.lat}-${location.lng}`);
 
-              // 現在の位置情報を前回の位置情報として保存
-              prevUserLocation = { ...userLocation };
+                    // 履歴を表示
+                    const stampedInfo = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
+                    completedStamps.innerHTML += `<p>${stampedInfo}</p>`;
+                  }
+                }
+              });
             },
             error => {
               console.error('Error getting user location:', error);
@@ -125,11 +124,6 @@
     // 度をラジアンに変換する関数
     function toRadians(degrees) {
       return degrees * (Math.PI / 180);
-    }
-
-    // 2つの位置情報が等しいかどうかを判定する関数
-    function areLocationsEqual(location1, location2) {
-      return location1.lat === location2.lat && location1.lng === location2.lng;
     }
   </script>
   <!-- Google Maps JavaScript API の読み込み -->
