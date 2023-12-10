@@ -63,6 +63,11 @@
                 alert('Stamped!'); // アラートを表示（カスタマイズ可能）
               }
             });
+
+            // スマートフォンの場合、位置情報確認用のダイアログを表示
+            if (window.innerWidth <= 600) {
+              showLocationDialog(userLocation);
+            }
           },
           error => {
             console.error('Error getting user location:', error);
@@ -94,6 +99,12 @@
     // 度をラジアンに変換する関数
     function toRadians(degrees) {
       return degrees * (Math.PI / 180);
+    }
+
+    // 位置情報確認用のダイアログを表示する関数
+    function showLocationDialog(userLocation) {
+      const message = `Your current location: Lat ${userLocation.lat}, Lng ${userLocation.lng}`;
+      alert(message);
     }
   </script>
   <!-- Google Maps JavaScript API の読み込み -->
