@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>宇宙人発見伝</title>
   <style>
+    /*スマホとPC両方に適応できるようにした ダイアログ表示を一回だけにするようにした スタンプ表示の重複を消す*/
     body {
       background-color: #0084ff;
       margin: 0;
@@ -38,6 +39,12 @@
       // よって少数第4位までは確実に記載する
     ];
 
+    // 各スタンプの状態を保持するオブジェクト
+    const stampStates = stampLocations.reduce((acc, location) => {
+      acc[`${location.lat}_${location.lng}`] = false;
+      return acc;
+    }, {});
+
     // ページが読み込まれた時に呼ばれる関数
     function initMap() {
       // マップ要素を取得
@@ -58,12 +65,14 @@
               map.innerHTML = `<p>User's Location: Lat ${userLocation.lat}, Lng ${userLocation.lng}</p>`;
 
               // ユーザーがスタンプの近くにいるか確認
-              let stamped = false;
               stampLocations.forEach(location => {
                 const distance = calculateDistance(userLocation, location);
-                if (distance < 1000 && !stamped) {
+                const key = `${location.lat}_${location.lng}`;
+
+                // スタンプが押されておらず、一定の距離以下であればアクション実行
+                if (!stampStates[key] && distance < 1000) {
                   alert('Stamped!');
-                  stamped = true;
+                  stampStates[key] = true; // スタンプが押されたことを記録
                 }
               });
             },
