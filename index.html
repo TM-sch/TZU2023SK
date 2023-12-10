@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>宇宙人発見伝</title>
   <style>
-    /*スマホとPC両方に適応できるようにした ダイアログ表示を一回だけにするようにした スタンプ表示の重複を消す*/
     body {
       background-color: #0084ff;
       margin: 0;
@@ -21,11 +20,18 @@
       height: 60vh; /* 画面の高さの60%に設定 */
       width: 100%;
     }
+
+    #completedStamp {
+      text-align: center;
+      color: white;
+      font-size: 18px;
+    }
   </style>
 </head>
 <body>
   <h1>Stamp Rally</h1>
   <div id="map"></div>
+  <div id="completedStamp"></div>
   <script>
     // スタンプの位置情報
     const stampLocations = [
@@ -44,8 +50,9 @@
 
     // ページが読み込まれた時に呼ばれる関数
     function initMap() {
-      // マップ要素を取得
+      // マップ要素とcompletedStamp要素を取得
       const map = document.getElementById('map');
+      const completedStamp = document.getElementById('completedStamp');
 
       // ユーザーの位置情報を更新する関数
       function updateUserLocation() {
@@ -70,6 +77,9 @@
                   if (distance < 1000 && !stamped) {
                     alert('Stamped!');
                     stamped = true;
+
+                    // stamped!が完了した場所の位置情報の数値を表示
+                    completedStamp.innerHTML = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
                   }
                 });
               }
@@ -125,4 +135,3 @@
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
 </body>
 </html>
-
