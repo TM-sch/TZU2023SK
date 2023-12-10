@@ -59,12 +59,12 @@
 
   <!-- ゲームのスクリプト -->
   <script>
+    let gameStarted = false; // ゲームが開始されたかどうかのフラグ
+
     function startGame() {
       document.getElementById('gameStartPopup').style.display = 'none';
+      gameStarted = true; // ゲーム開始フラグをセット
       initMap();
-
-      // 1秒ごとに位置情報を更新
-      setInterval(updateUserLocation, 1000);
     }
 
     // スタンプの位置情報
@@ -96,7 +96,7 @@
 
       // ユーザーの位置情報を更新する関数
       function updateUserLocation() {
-        if (navigator.geolocation) {
+        if (navigator.geolocation && gameStarted) { // ゲームが開始されている場合のみ位置情報を更新
           navigator.geolocation.getCurrentPosition(
             position => {
               // ユーザーの位置情報
@@ -139,12 +139,15 @@
             }
           );
         } else {
-          console.error('Geolocation is not supported by this browser.');
+          console.error('Geolocation is not supported by this browser or the game has not started.');
         }
       }
 
       // 最初の位置情報を取得
       updateUserLocation();
+
+      // 1秒ごとに位置情報を更新
+      setInterval(updateUserLocation, 1000);
     }
 
     // 2つの地点間の距離を計算する関数
