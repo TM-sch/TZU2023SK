@@ -9,11 +9,12 @@
       background-color: #0084ff;
       margin: 0;
       padding: 0;
+      color: white;
+      font-family: Arial, sans-serif;
     }
 
     h1 {
       text-align: center;
-      color: white;
     }
 
     #map {
@@ -23,7 +24,6 @@
 
     #completedStamp {
       text-align: center;
-      color: white;
       font-size: 18px;
     }
   </style>
@@ -78,8 +78,10 @@
                     alert('Stamped!');
                     stamped = true;
 
-                    // stamped!が完了した場所の位置情報の数値を表示
-                    completedStamp.innerHTML = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
+                    // stamped!が完了した場所の位置情報を表示
+                    const stampedInfo = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
+                    completedStamp.innerHTML = `<p>${stampedInfo}</p>`;
+                    document.body.insertAdjacentHTML('beforeend', `<p>${stampedInfo}</p>`);
                   }
                 });
               }
