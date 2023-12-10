@@ -54,12 +54,12 @@
   <!-- ゲーム開始の確認画面 -->
   <div id="startGameConfirmation">
     <p>このゲームを始めますか？</p>
-    <button onclick="startGame()">はい</button>
+    <button onclick="confirmStartGame()">はい</button>
   </div>
 
   <!-- ゲームのスクリプト -->
   <script>
-    function startGame() {
+    function confirmStartGame() {
       document.getElementById('startGameConfirmation').style.display = 'none';
       initMap();
     }
@@ -120,18 +120,8 @@
                   const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
                 //ユーザーがスタンプの近くにいて、スタンプの位置との距離が100m未満であるかの判定をしている
                   if (distance < 100 && !stamped && !stampedHistory.includes(locationKey)) {
-                    alert('Stamped!');
+                    showStampedDialog(location);
                     stamped = true;
-
-                    // スタンプが完了した場所の位置情報を履歴に追加
-                    stampedHistory.push(locationKey);
-
-                    // 履歴を表示
-                    const stampedInfo = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
-                    completedStamps.innerHTML += `<p>${stampedInfo}</p>`;
-
-                    // ダイアログを表示した時刻を更新
-                    lastDialogTime = currentTime;
                   }
                 });
               }
@@ -143,6 +133,19 @@
         } else {
           console.error('Geolocation is not supported by this browser.');
         }
+      }
+
+      // スタンプが完了した場所のダイアログを表示する関数
+      function showStampedDialog(location) {
+        const stampedInfo = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
+        completedStamps.innerHTML += `<p>${stampedInfo}</p>`;
+        
+        // スタンプが完了した場所の位置情報を履歴に追加
+        const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
+        stampedHistory.push(locationKey);
+
+        // ダイアログを表示した時刻を更新
+        lastDialogTime = new Date().getTime();
       }
 
       // 最初の位置情報を取得
