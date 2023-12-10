@@ -26,13 +26,47 @@
       text-align: center;
       font-size: 18px;
     }
+
+    #gameStartPopup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      display: none;
+    }
+
+    #gameStartPopup button {
+      padding: 10px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <h1>スタンプラリー</h1>
   <div id="map"></div>
   <div id="completedStamps"></div>
+
+  <!-- ゲーム開始の確認ポップアップ -->
+  <div id="gameStartPopup">
+    <p>ゲームを始めますか？</p>
+    <button onclick="startGame()">OK</button>
+  </div>
+
+  <!-- ゲームのスクリプト -->
   <script>
+    function startGame() {
+      document.getElementById('gameStartPopup').style.display = 'none';
+      initMap();
+
+      // 1秒ごとに位置情報を更新
+      setInterval(updateUserLocation, 1000);
+    }
+
     // スタンプの位置情報
     const stampLocations = [
       { lat: 35.6068, lng: 139.3319 }, // 相原駅
@@ -82,7 +116,7 @@
                 stampLocations.forEach(location => {
                   const distance = calculateDistance(userLocation, location);
                   const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
-                //ユーザーがスタンプの近くにいて、スタンプの位置との距離が100m未満であるかの判定をしている
+                  //ユーザーがスタンプの近くにいて、スタンプの位置との距離が100m未満であるかの判定をしている
                   if (distance < 100 && !stamped && !stampedHistory.includes(locationKey)) {
                     alert('Stamped!');
                     stamped = true;
@@ -111,9 +145,6 @@
 
       // 最初の位置情報を取得
       updateUserLocation();
-
-      // 1秒ごとに位置情報を更新
-      setInterval(updateUserLocation, 1000);
     }
 
     // 2つの地点間の距離を計算する関数
@@ -138,6 +169,11 @@
     function toRadians(degrees) {
       return degrees * (Math.PI / 180);
     }
+
+    // ページ読み込み時に確認ポップアップを表示
+    window.onload = function() {
+      document.getElementById('gameStartPopup').style.display = 'block';
+    };
   </script>
   <!-- Google Maps JavaScript API の読み込み -->
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
