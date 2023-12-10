@@ -81,7 +81,7 @@
                 let stamped = false;
                 stampLocations.forEach(location => {
                   const distance = calculateDistance(userLocation, location);
-                  const locationKey = `${location.lat}-${location.lng}`;
+                  const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
 
                   if (distance < 1000 && !stamped && !stampedHistory.includes(locationKey)) {
                     alert('Stamped!');
