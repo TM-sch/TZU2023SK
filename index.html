@@ -39,11 +39,8 @@
       // よって少数第4位までは確実に記載する
     ];
 
-    // 各スタンプの状態を保持するオブジェクト
-    const stampStates = stampLocations.reduce((acc, location) => {
-      acc[`${location.lat}_${location.lng}`] = false;
-      return acc;
-    }, {});
+    // 前回の位置情報
+    let prevUserLocation = null;
 
     // ページが読み込まれた時に呼ばれる関数
     function initMap() {
@@ -64,17 +61,21 @@
               // マップにユーザーの位置情報を表示
               map.innerHTML = `<p>User's Location: Lat ${userLocation.lat}, Lng ${userLocation.lng}</p>`;
 
-              // ユーザーがスタンプの近くにいるか確認
-              stampLocations.forEach(location => {
-                const distance = calculateDistance(userLocation, location);
-                const key = `${location.lat}_${location.lng}`;
+              // 前回の位置情報が存在し、現在の位置情報が変化している場合にのみアクション実行
+              if (prevUserLocation && !areLocationsEqual(prevUserLocation, userLocation)) {
+                // ユーザーがスタンプの近くにいるか確認
+                let stamped = false;
+                stampLocations.forEach(location => {
+                  const distance = calculateDistance(userLocation, location);
+                  if (distance < 1000 && !stamped) {
+                    alert('Stamped!');
+                    stamped = true;
+                  }
+                });
+              }
 
-                // スタンプが押されておらず、一定の距離以下であればアクション実行
-                if (!stampStates[key] && distance < 1000) {
-                  alert('Stamped!');
-                  stampStates[key] = true; // スタンプが押されたことを記録
-                }
-              });
+              // 現在の位置情報を前回の位置情報として保存
+              prevUserLocation = { ...userLocation };
             },
             error => {
               console.error('Error getting user location:', error);
@@ -114,8 +115,14 @@
     function toRadians(degrees) {
       return degrees * (Math.PI / 180);
     }
+
+    // 2つの位置情報が等しいかどうかを判定する関数
+    function areLocationsEqual(location1, location2) {
+      return location1.lat === location2.lat && location1.lng === location2.lng;
+    }
   </script>
   <!-- Google Maps JavaScript API の読み込み -->
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
 </body>
 </html>
+
