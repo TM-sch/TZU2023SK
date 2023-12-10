@@ -26,6 +26,24 @@
       text-align: center;
       font-size: 18px;
     }
+
+    #startGameConfirmation {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      display: none;
+    }
+
+    #startGameConfirmation button {
+      padding: 10px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -33,21 +51,24 @@
   <div id="map"></div>
   <div id="completedStamps"></div>
 
-  <!-- ポップアップ表示のスクリプト -->
-  <script>
-    function startGame() {
-      // ポップアップでゲームを始めるか確認
-      if (confirm("このゲームを始めますか？")) {
-        initMap(); // OKボタンがクリックされたらゲームを開始
-      }
-    }
-
-    // ページ読み込み時にポップアップを表示
-    window.onload = startGame;
-  </script>
+  <!-- ゲーム開始の確認画面 -->
+  <div id="startGameConfirmation">
+    <p>このゲームを始めますか？</p>
+    <button onclick="startGame()">はい</button>
+  </div>
 
   <!-- ゲームのスクリプト -->
   <script>
+    function startGame() {
+      document.getElementById('startGameConfirmation').style.display = 'none';
+      initMap();
+    }
+
+    // ページ読み込み時に確認画面を表示
+    window.onload = function() {
+      document.getElementById('startGameConfirmation').style.display = 'block';
+    };
+
     // スタンプの位置情報
     const stampLocations = [
       { lat: 35.6068, lng: 139.3319 }, // 相原駅
