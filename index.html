@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>宇宙人発い見伝</title>
+  <title>宇宙人発見伝</title>
   <style>
     body {
       background-color: #0084ff;
@@ -48,6 +48,12 @@
     // スタンプの履歴
     const stampedHistory = [];
 
+    // ダイアログの表示間隔（ミリ秒）
+    const dialogInterval = 10000; // 10秒
+
+    // 最後にダイアログを表示した時刻
+    let lastDialogTime = 0;
+
     // ページが読み込まれた時に呼ばれる関数
     function initMap() {
       // マップ要素とcompletedStamps要素を取得
@@ -68,24 +74,31 @@
               // マップにユーザーの位置情報を表示
               map.innerHTML = `<p>User's Location: Lat ${userLocation.lat}, Lng ${userLocation.lng}</p>`;
 
-              // ユーザーがスタンプの近くにいるか確認
-              let stamped = false;
-              stampLocations.forEach(location => {
-                const distance = calculateDistance(userLocation, location);
-                const locationKey = `${location.lat}-${location.lng}`;
+              // ダイアログ表示の制御
+              const currentTime = new Date().getTime();
+              if (currentTime - lastDialogTime >= dialogInterval) {
+                // ユーザーがスタンプの近くにいるか確認
+                let stamped = false;
+                stampLocations.forEach(location => {
+                  const distance = calculateDistance(userLocation, location);
+                  const locationKey = `${location.lat}-${location.lng}`;
 
-                if (distance < 1000 && !stamped && !stampedHistory.includes(locationKey)) {
-                  alert('Stamped!');
-                  stamped = true;
+                  if (distance < 1000 && !stamped && !stampedHistory.includes(locationKey)) {
+                    alert('Stamped!');
+                    stamped = true;
 
-                  // スタンプが完了した場所の位置情報を履歴に追加
-                  stampedHistory.push(locationKey);
+                    // スタンプが完了した場所の位置情報を履歴に追加
+                    stampedHistory.push(locationKey);
 
-                  // 履歴を表示
-                  const stampedInfo = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
-                  completedStamps.innerHTML += `<p>${stampedInfo}</p>`;
-                }
-              });
+                    // 履歴を表示
+                    const stampedInfo = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
+                    completedStamps.innerHTML += `<p>${stampedInfo}</p>`;
+
+                    // ダイアログを表示した時刻を更新
+                    lastDialogTime = currentTime;
+                  }
+                });
+              }
             },
             error => {
               console.error('Error getting user location:', error);
