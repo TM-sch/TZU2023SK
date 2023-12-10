@@ -43,36 +43,44 @@
       // マップ要素を取得
       const map = document.getElementById('map');
 
-      // ユーザーの位置情報を取得
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          position => {
-            // ユーザーの位置情報
-            const userLocation = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            };
+      // ユーザーの位置情報を更新する関数
+      function updateUserLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            position => {
+              // ユーザーの位置情報
+              const userLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+              };
 
-            // マップにユーザーの位置情報を表示
-            map.innerHTML = `<p>User's Location: Lat ${userLocation.lat}, Lng ${userLocation.lng}</p>`;
+              // マップにユーザーの位置情報を表示
+              map.innerHTML = `<p>User's Location: Lat ${userLocation.lat}, Lng ${userLocation.lng}</p>`;
 
-            // ユーザーがスタンプの近くにいるか確認
-            let stamped = false;
-            stampLocations.forEach(location => {
-              const distance = calculateDistance(userLocation, location);
-              if (distance < 1000 && !stamped) { // 一定の距離以下でかつまだスタンプが押されていない場合
-                alert('Stamped!'); // アラートを表示（カスタマイズ可能）
-                stamped = true; // スタンプが押されたことを記録
-              }
-            });
-          },
-          error => {
-            console.error('Error getting user location:', error);
-          }
-        );
-      } else {
-        console.error('Geolocation is not supported by this browser.');
+              // ユーザーがスタンプの近くにいるか確認
+              let stamped = false;
+              stampLocations.forEach(location => {
+                const distance = calculateDistance(userLocation, location);
+                if (distance < 1000 && !stamped) {
+                  alert('Stamped!');
+                  stamped = true;
+                }
+              });
+            },
+            error => {
+              console.error('Error getting user location:', error);
+            }
+          );
+        } else {
+          console.error('Geolocation is not supported by this browser.');
+        }
       }
+
+      // 最初の位置情報を取得
+      updateUserLocation();
+
+      // 1秒ごとに位置情報を更新
+      setInterval(updateUserLocation, 1000);
     }
 
     // 2つの地点間の距離を計算する関数
