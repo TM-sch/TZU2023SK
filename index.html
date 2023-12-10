@@ -22,7 +22,7 @@
       width: 100%;
     }
 
-    #completedStamp {
+    #completedStamps {
       text-align: center;
       font-size: 18px;
     }
@@ -31,7 +31,7 @@
 <body>
   <h1>Stamp Rally</h1>
   <div id="map"></div>
-  <div id="completedStamp"></div>
+  <div id="completedStamps"></div>
   <script>
     // スタンプの位置情報
     const stampLocations = [
@@ -50,9 +50,9 @@
 
     // ページが読み込まれた時に呼ばれる関数
     function initMap() {
-      // マップ要素とcompletedStamp要素を取得
+      // マップ要素とcompletedStamps要素を取得
       const map = document.getElementById('map');
-      const completedStamp = document.getElementById('completedStamp');
+      const completedStamps = document.getElementById('completedStamps');
 
       // ユーザーの位置情報を更新する関数
       function updateUserLocation() {
@@ -75,12 +75,11 @@
                 stampLocations.forEach(location => {
                   const distance = calculateDistance(userLocation, location);
                   if (distance < 1000 && !stamped) {
-                    alert('Stamped!');
                     stamped = true;
 
                     // stamped!が完了した場所の位置情報を表示
                     const stampedInfo = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
-                    completedStamp.innerHTML = `<p>${stampedInfo}</p>`;
+                    completedStamps.innerHTML = `<p>${stampedInfo}</p>`;
                     document.body.insertAdjacentHTML('beforeend', `<p>${stampedInfo}</p>`);
                   }
                 });
