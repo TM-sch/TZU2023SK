@@ -65,7 +65,7 @@
             });
 
             // スマートフォンの場合、位置情報確認用のダイアログを表示
-            if (window.innerWidth <= 600) {
+            if (isMobile()) {
               showLocationDialog(userLocation);
             }
           },
@@ -105,6 +105,11 @@
     function showLocationDialog(userLocation) {
       const message = `Your current location: Lat ${userLocation.lat}, Lng ${userLocation.lng}`;
       alert(message);
+    }
+
+    // デバイスがモバイルかどうかを判定する関数
+    function isMobile() {
+      return window.innerWidth <= 600;
     }
   </script>
   <!-- Google Maps JavaScript API の読み込み -->
