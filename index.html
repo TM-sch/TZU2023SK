@@ -83,7 +83,7 @@
                   const distance = calculateDistance(userLocation, location);
                   const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
                 //ユーザーがスタンプの近くにいて、スタンプの位置との距離が10m未満であるかの判定をしている
-                  if (distance < 10 && !stamped && !stampedHistory.includes(locationKey)) {
+                  if (distance < 100 && !stamped && !stampedHistory.includes(locationKey)) {
                     alert('Stamped!');
                     stamped = true;
 
