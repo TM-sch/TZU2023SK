@@ -32,6 +32,21 @@
   <h1>スタンプラリー</h1>
   <div id="map"></div>
   <div id="completedStamps"></div>
+
+  <!-- ポップアップ表示のスクリプト -->
+  <script>
+    function startGame() {
+      // ポップアップでゲームを始めるか確認
+      if (confirm("このゲームを始めますか？")) {
+        initMap(); // OKボタンがクリックされたらゲームを開始
+      }
+    }
+
+    // ページ読み込み時にポップアップを表示
+    window.onload = startGame;
+  </script>
+
+  <!-- ゲームのスクリプト -->
   <script>
     // スタンプの位置情報
     const stampLocations = [
