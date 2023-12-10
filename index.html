@@ -57,17 +57,14 @@
             map.innerHTML = `<p>User's Location: Lat ${userLocation.lat}, Lng ${userLocation.lng}</p>`;
 
             // ユーザーがスタンプの近くにいるか確認
+            let stamped = false;
             stampLocations.forEach(location => {
               const distance = calculateDistance(userLocation, location);
-              if (distance < 1000) { // 一定の距離以下ならスタンプを押したとみなす
+              if (distance < 1000 && !stamped) { // 一定の距離以下でかつまだスタンプが押されていない場合
                 alert('Stamped!'); // アラートを表示（カスタマイズ可能）
+                stamped = true; // スタンプが押されたことを記録
               }
             });
-
-            // スマートフォンの場合、位置情報確認用のダイアログを表示
-            if (isMobile()) {
-              showLocationDialog(userLocation);
-            }
           },
           error => {
             console.error('Error getting user location:', error);
@@ -99,17 +96,6 @@
     // 度をラジアンに変換する関数
     function toRadians(degrees) {
       return degrees * (Math.PI / 180);
-    }
-
-    // 位置情報確認用のダイアログを表示する関数
-    function showLocationDialog(userLocation) {
-      const message = `Your current location: Lat ${userLocation.lat}, Lng ${userLocation.lng}`;
-      alert(message);
-    }
-
-    // デバイスがモバイルかどうかを判定する関数
-    function isMobile() {
-      return window.innerWidth <= 600;
     }
   </script>
   <!-- Google Maps JavaScript API の読み込み -->
