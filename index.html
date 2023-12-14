@@ -2,78 +2,78 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>宇宙人発見伝</title>
-  <style>
-    body {
-      background-color: #00b4d4;
-      margin: 0;
-      padding: 0;
-      color: white;
-      font-family: Arial, sans-serif;
-      overflow: hidden;
-    }
-
-    h1 {
-      text-align: center;
-    }
-
-    #completedStamps {
-      text-align: center;
-      font-size: 18px;
-    }
-
-    #gameStartPopup {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .popup-content {
-      position: relative;
-      max-width: 100%;
-      height: 100%;
-      background: url('Top-Img.png') center center / cover no-repeat;
-      text-align: center;
-    }
-
-    .overlay-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      padding: 20px;
-      color: #5f5f5f;
-      font-size: 1rem;
-    }
-
-    .Btytle {
-      width: 80%;
-    }
-
-    .overlay-content button {
-      background-color: #12335f;
-      color: white;
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .overlay-content button:hover {
-      background-color: #fff;
-    }
-
-  </style>
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宇宙人発見伝</title>
+    <style>
+      body {
+        background-color: #00b4d4;
+        margin: 0;
+        padding: 0;
+        color: white;
+        font-family: Arial, sans-serif;
+        overflow: hidden;
+      }
+  
+      h1 {
+        text-align: center;
+      }
+  
+      #completedStamps {
+        text-align: center;
+        font-size: 18px;
+      }
+  
+      #gameStartPopup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+  
+      .popup-content {
+        position: relative;
+        max-width: 100%;
+        height: 100%;
+        background: url('Top-Img.png') center center / cover no-repeat;
+        text-align: center;
+      }
+  
+      .overlay-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 20px;
+        color: #5f5f5f;
+        font-size: 1rem;
+      }
+  
+      .Btytle {
+        width: 80%;
+      }
+  
+      .overlay-content button {
+        background-color: #12335f;
+        color: white;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+  
+      .overlay-content button:hover {
+        background-color: #fff;
+      }
+  
+    </style>
+  </head>
 
 <body>
   <h1>スタンプラリー</h1>
@@ -99,7 +99,6 @@
     // スタンプの位置情報
     const stampLocations = [
       { lat: 35.6068, lng: 139.3319 }, // 相原駅
-      { lat: 35.5926, lng: 139.4081 }, // お試し
       { lat: 35.6152, lng: 139.3349 }, // 東京造形大学1号館
       { lat: 35.6157, lng: 139.3333 }, // 東京造形大学7号館
       { lat: 35.6167, lng: 139.3334 }, // 東京造形大学10号館
@@ -139,6 +138,13 @@
             // ダイアログ表示の制御
             const currentTime = new Date().getTime();
             if (currentTime - lastDialogTime >= dialogInterval) {
+              // 範囲内外の表示
+              if (isInsideArea(userLocation)) {
+                document.getElementById('completedStamps').innerHTML = '<h2>東京造形大学編</h2>';
+              } else {
+                document.getElementById('completedStamps').innerHTML = '<p>探索範囲外です</p>';
+              }
+
               // ユーザーがスタンプの近くにいるか確認
               let stamped = false;
               stampLocations.forEach(location => {
@@ -214,7 +220,6 @@
         '35.6157-139.3333': '手掛かり2',
         '35.6167-139.3334': '手掛かり3',
         '35.6068-139.3319': '手掛かり4',
-        '35.5926-139.4081': '手掛かり0',
       };
 
       const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
@@ -230,7 +235,6 @@
       document.getElementById('gameStartPopup').style.display = 'block';
     };
   </script>
-
 </body>
 
 </html>
