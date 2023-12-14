@@ -90,15 +90,15 @@
   </div>
 
   <!-- ゲームのスクリプト -->
-  <script>
+<script>
     let gameStarted = false;
-
+  
     function startGame() {
       document.getElementById('gameStartPopup').style.display = 'none';
       gameStarted = true;
       updateUserLocation();
     }
-
+  
     // スタンプの位置情報
     const stampLocations = [
       { lat: 35.6068, lng: 139.3319 }, // 相原駅
@@ -110,77 +110,74 @@
       // 小数第4位を誤差する(0.0001ずれる)と10mの誤差(経度、緯度両方で14m)になる。
       // よって少数第4位までは確実に記載する
     ];
-
+  
+    // 探索エリアの外側の座標
+    const outsideAreaCoordinates = [
+      { lat: 35.6068, lng: 139.3314 },
+      { lat: 35.6150, lng: 139.3359 },
+      { lat: 35.6058, lng: 139.3317 },
+      { lat: 35.6184, lng: 139.3347 },
+    ];
+  
     // スタンプの履歴
     const stampedHistory = [];
-
+  
     // ダイアログの表示間隔（ミリ秒）
     const dialogInterval = 10000; // 10秒
-
+  
     // 最後にダイアログを表示した時刻
     let lastDialogTime = 0;
-
+  
     // ユーザーの位置情報を更新する関数
     function updateUserLocation() {
-  // ゲームが開始されている場合のみ位置情報を更新
-  if (navigator.geolocation && gameStarted) {
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        // ユーザーの位置情報
-        const userLocation = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-
-        // ダイアログ表示の制御
-        const currentTime = new Date().getTime();
-        if (currentTime - lastDialogTime >= dialogInterval) {
-          let stamped = false;
-          let outsideExplorationArea = false; // 探索エリア外にいるかどうかを確認するフラグ
-
-          stampLocations.forEach(location => {
-            const distance = calculateDistance(userLocation, location);
-            const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
-
-            // ユーザーが探索エリア外にいるかどうかを確認
-            if (distance > 0.03) {
-              outsideExplorationArea = true;
+      // ゲームが開始されている場合のみ位置情報を更新
+      if (navigator.geolocation && gameStarted) {
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            // ユーザーの位置情報
+            const userLocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            };
+  
+            // ダイアログ表示の制御
+            const currentTime = new Date().getTime();
+            if (currentTime - lastDialogTime >= dialogInterval) {
+              let stamped = false;
+  
+              stampLocations.forEach(location => {
+                const distance = calculateDistance(userLocation, location);
+                const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
+  
+                // スタンプの範囲内かつ未スタンプの場所
+                if (distance < 100 && !stamped && !stampedHistory.includes(locationKey)) {
+                  // スタンプが完了した場所の位置情報を履歴に追加
+                  stampedHistory.push(locationKey);
+  
+                  // ダイアログを表示した時刻を更新
+                  lastDialogTime = currentTime;
+  
+                  // スタンプの範囲内で探索エリア内外の判定
+                  if (isOutsideArea(userLocation)) {
+                    document.getElementById('completedStamps').innerHTML += "<p>探索外です</p>";
+                  } else {
+                    document.getElementById('completedStamps').innerHTML += "<p>東京造形大学編</p>";
+                  }
+  
+                  stamped = true;
+                }
+              });
             }
-
-            // ユーザーがスタンプの近くにいて、スタンプの位置との距離が100m未満であるかの判定をしている
-            if (distance < 100 && !stamped && !stampedHistory.includes(locationKey)) {
-              alert('Stamped!');
-              stamped = true;
-
-              // スタンプが完了した場所の位置情報を履歴に追加
-              stampedHistory.push(locationKey);
-
-              // ダイアログを表示した時刻を更新
-              lastDialogTime = currentTime;
-
-              // 東京造形大学の座標に近いかどうかを確認
-              if (outsideExplorationArea) {
-                document.getElementById('completedStamps').innerHTML += "<p>探索外です</p>";
-              } else {
-                document.getElementById('completedStamps').innerHTML += "<p>東京造形大学編</p>";
-              }
-            }
-          });
-
-          // outsideExplorationArea フラグをリセット
-          outsideExplorationArea = false;
-        }
-      },
-      error => {
-        console.error('Error getting user location:', error);
+          },
+          error => {
+            console.error('Error getting user location:', error);
+          }
+        );
+      } else {
+        console.error('Geolocation is not supported by this browser or the game has not started yet.');
       }
-    );
-  } else {
-    console.error('Geolocation is not supported by this browser or the game has not started yet.');
-  }
-}
-
-
+    }
+  
     // 2つの地点間の距離を計算する関数
     function calculateDistance(point1, point2) {
       const R = 6371e3; // 地球の半径（メートル）
@@ -188,22 +185,32 @@
       const lat2 = toRadians(point2.lat);
       const deltaLat = toRadians(point2.lat - point1.lat);
       const deltaLng = toRadians(point2.lng - point1.lng);
-
+  
       const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
                 Math.cos(lat1) * Math.cos(lat2) *
                 Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
-
+  
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
+  
       const distance = R * c;
       return distance;
     }
-
+  
     // 度をラジアンに変換する関数
     function toRadians(degrees) {
       return degrees * (Math.PI / 180);
     }
-
+  
+    // 探索エリア内外の判定
+    function isOutsideArea(userLocation) {
+      for (let i = 0; i < outsideAreaCoordinates.length; i++) {
+        if (calculateDistance(userLocation, outsideAreaCoordinates[i]) < 0.03) {
+          return false; // 内側
+        }
+      }
+      return true; // 外側
+    }
+  
     // ページ読み込み時に確認ポップアップを表示
     window.onload = function() {
       document.getElementById('gameStartPopup').style.display = 'block';
