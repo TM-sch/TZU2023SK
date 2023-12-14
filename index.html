@@ -37,22 +37,8 @@
 .popup-content {
   position: relative;
   max-width: 80%; /* 画面サイズに応じて調整 */
-  background-color: #A2D6D5;
+  background: url('Top-Img.png') center center / cover no-repeat; /* 背景画像をセット */
   text-align: center;
-}
-
-.background-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.lasc {
-  width: 100%;
-  height: auto;
-  display: block;
 }
 
 .overlay-content {
@@ -71,13 +57,9 @@
   <h1>スタンプラリー</h1>
   <div id="completedStamps"></div>
   
-  <!-- ゲーム開始の確認ポップアップ -->
+ <!-- ゲーム開始の確認ポップアップ -->
 <div id="gameStartPopup">
   <div class="popup-content">
-    <!-- 背景画像 -->
-    <div class="background-image">
-      <img class="lasc" src="Top-Img.png" alt="Description of the image">
-    </div>
     <!-- その上に他の要素 -->
     <div class="overlay-content">
       <img class="Btytle" src="invader-hunt@2x.png" alt="Description of the image">
@@ -86,6 +68,7 @@
     </div>
   </div>
 </div>
+
 
 
   <!-- ゲームのスクリプト -->
