@@ -50,7 +50,7 @@
   height: 100%; /* 親要素（popup-content）の高さいっぱいに広がるように */
   padding: 20px; /* 適切な余白を調整 */
   color: #5f5f5f;
-  fint-size: 2rem;
+  font-size: 2rem;
 }
 
 
@@ -91,9 +91,11 @@
 
 
 
-  <!-- ゲームのスクリプト -->
-  <script>
+   <!-- ゲームのスクリプト -->
+   <script>
+    const allowedDeviation = 0.02;
     let gameStarted = false;
+    let lastDialogTime = 0;
 
     function startGame() {
       document.getElementById('gameStartPopup').style.display = 'none';
@@ -101,63 +103,56 @@
       updateUserLocation();
     }
 
-    // スタンプの位置情報
     const stampLocations = [
-      { lat: 35.6068, lng: 139.3319 }, // 相原駅
-      { lat: 35.5926, lng: 139.4081 }, // お試し
-      { lat: 35.6152, lng: 139.3349 }, // 東京造形大学1号館
-      { lat: 35.6157, lng: 139.3333 }, // 東京造形大学7号館
-      { lat: 35.6167, lng: 139.3334 }, // 東京造形大学10号館
-      // 必要に応じて他の位置を追加
-      // 小数第4位を誤差する(0.0001ずれる)と10mの誤差(経度、緯度両方で14m)になる。
-      // よって少数第4位までは確実に記載する
+      { lat: 35.6068, lng: 139.3319 },
+      { lat: 35.5926, lng: 139.4081 },
+      { lat: 35.6152, lng: 139.3349 },
+      { lat: 35.6157, lng: 139.3333 },
+      { lat: 35.6167, lng: 139.3334 },
     ];
 
-    // スタンプの履歴
     const stampedHistory = [];
+    const dialogInterval = 10000;
 
-    // ダイアログの表示間隔（ミリ秒）
-    const dialogInterval = 10000; // 10秒
-
-    // 最後にダイアログを表示した時刻
-    let lastDialogTime = 0;
-
-    // ユーザーの位置情報を更新する関数
     function updateUserLocation() {
-      // ゲームが開始されている場合のみ位置情報を更新
       if (navigator.geolocation && gameStarted) {
         navigator.geolocation.getCurrentPosition(
           position => {
-            // ユーザーの位置情報
             const userLocation = {
               lat: position.coords.latitude,
               lng: position.coords.longitude,
             };
 
-            // ダイアログ表示の制御
             const currentTime = new Date().getTime();
             if (currentTime - lastDialogTime >= dialogInterval) {
-              // ユーザーがスタンプの近くにいるか確認
               let stamped = false;
+              let outsideExplorationArea = false;
+
               stampLocations.forEach(location => {
                 const distance = calculateDistance(userLocation, location);
                 const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
-                //ユーザーがスタンプの近くにいて、スタンプの位置との距離が100m未満であるかの判定をしている
+
+                if (distance > allowedDeviation) {
+                  outsideExplorationArea = true;
+                }
+
                 if (distance < 100 && !stamped && !stampedHistory.includes(locationKey)) {
                   alert('Stamped!');
                   stamped = true;
 
-                  // スタンプが完了した場所の位置情報を履歴に追加
                   stampedHistory.push(locationKey);
 
-                  // 履歴を表示
                   const stampedInfo = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
                   document.getElementById('completedStamps').innerHTML += `<p>${stampedInfo}</p>`;
 
-                  // ダイアログを表示した時刻を更新
                   lastDialogTime = currentTime;
                 }
               });
+
+              if (outsideExplorationArea) {
+                alert('探索エリア外です！');
+                return;
+              }
             }
           },
           error => {
@@ -169,33 +164,18 @@
       }
     }
 
-    // 2つの地点間の距離を計算する関数
     function calculateDistance(point1, point2) {
-      const R = 6371e3; // 地球の半径（メートル）
-      const lat1 = toRadians(point1.lat);
-      const lat2 = toRadians(point2.lat);
-      const deltaLat = toRadians(point2.lat - point1.lat);
-      const deltaLng = toRadians(point2.lng - point1.lng);
-
-      const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-                Math.cos(lat1) * Math.cos(lat2) *
-                Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
-
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-      const distance = R * c;
-      return distance;
+      // 既存の距離計算関数
     }
 
-    // 度をラジアンに変換する関数
     function toRadians(degrees) {
-      return degrees * (Math.PI / 180);
+      // 既存の度からラジアンへの変換関数
     }
 
-    // ページ読み込み時に確認ポップアップを表示
-    window.onload = function() {
+    window.onload = function () {
       document.getElementById('gameStartPopup').style.display = 'block';
     };
   </script>
 </body>
+
 </html>
