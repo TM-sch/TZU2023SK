@@ -71,6 +71,7 @@
     .overlay-content button:hover {
       background-color: #fff;
     }
+
   </style>
 </head>
 
@@ -94,6 +95,12 @@
   <script>
     let gameStarted = false;
 
+    function startGame() {
+      document.getElementById('gameStartPopup').style.display = 'none';
+      gameStarted = true;
+      updateUserLocation();
+    }
+
     // スタンプの位置情報
     const stampLocations = [
       { lat: 35.6068, lng: 139.3319 }, // 相原駅
@@ -115,12 +122,6 @@
     // 最後にダイアログを表示した時刻
     let lastDialogTime = 0;
 
-    function startGame() {
-      document.getElementById('gameStartPopup').style.display = 'none';
-      gameStarted = true;
-      updateUserLocation();
-    }
-
     // ユーザーの位置情報を更新する関数
     function updateUserLocation() {
       // ゲームが開始されている場合のみ位置情報を更新
@@ -141,20 +142,26 @@
               stampLocations.forEach(location => {
                 const distance = calculateDistance(userLocation, location);
                 const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
-                // ユーザーがスタンプの近くにいて、スタンプの位置との距離が100m未満であるかの判定をしている
-                if (distance < 100 && !stamped && !stampedHistory.includes(locationKey)) {
-                  alert('Stamped!');
-                  stamped = true;
 
+                // スタンプの範囲内かつ未スタンプの場所
+                if (distance < 100 && !stamped && !stampedHistory.includes(locationKey)) {
                   // スタンプが完了した場所の位置情報を履歴に追加
                   stampedHistory.push(locationKey);
 
-                  // 履歴を表示
-                  const stampedInfo = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
-                  document.getElementById('completedStamps').innerHTML += `<p>${stampedInfo}</p>`;
-
                   // ダイアログを表示した時刻を更新
                   lastDialogTime = currentTime;
+
+                  // スタンプの範囲内で探索エリア内外の判定
+                  if (isInsideArea(userLocation)) {
+                    document.getElementById('completedStamps').innerHTML += "<p>東京造形大学編</p>";
+                  } else {
+                    document.getElementById('completedStamps').innerHTML += "<p>探索外です</p>";
+                  }
+
+                  // 表示する手掛かりの情報
+                  displayClueInfo(location);
+  
+                  stamped = true;
                 }
               });
             }
@@ -177,8 +184,8 @@
       const deltaLng = toRadians(point2.lng - point1.lng);
 
       const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-        Math.cos(lat1) * Math.cos(lat2) *
-        Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
+                Math.cos(lat1) * Math.cos(lat2) *
+                Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
 
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
@@ -189,6 +196,33 @@
     // 度をラジアンに変換する関数
     function toRadians(degrees) {
       return degrees * (Math.PI / 180);
+    }
+
+    // 探索エリア内外の判定
+    function isInsideArea(userLocation) {
+      // 指定された範囲内かどうかを判定
+      return (
+        userLocation.lat >= 35.6058 && userLocation.lat <= 35.6184 &&
+        userLocation.lng >= 139.3314 && userLocation.lng <= 139.3359
+      );
+    }
+
+    // 表示する手掛かりの情報
+    function displayClueInfo(location) {
+      const clues = {
+        '35.6152-139.3349': '手掛かり1',
+        '35.6157-139.3333': '手掛かり2',
+        '35.6167-139.3334': '手掛かり3',
+        '35.6068-139.3319': '手掛かり4',
+        '35.5926-139.4081': '手掛かり0',
+      };
+
+      const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
+      const clueInfo = clues[locationKey];
+
+      if (clueInfo) {
+        document.getElementById('completedStamps').innerHTML += `<p>${clueInfo}</p>`;
+      }
     }
 
     // ページ読み込み時に確認ポップアップを表示
