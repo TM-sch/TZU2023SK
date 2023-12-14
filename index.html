@@ -71,6 +71,7 @@
     .overlay-content button:hover {
       background-color: #fff;
     }
+
   </style>
 </head>
 
@@ -94,6 +95,12 @@
   <script>
     let gameStarted = false;
 
+    function startGame() {
+      document.getElementById('gameStartPopup').style.display = 'none';
+      gameStarted = true;
+      updateUserLocation();
+    }
+
     // スタンプの位置情報
     const stampLocations = [
       { lat: 35.6068, lng: 139.3319 }, // 相原駅
@@ -101,6 +108,9 @@
       { lat: 35.6152, lng: 139.3349 }, // 東京造形大学1号館
       { lat: 35.6157, lng: 139.3333 }, // 東京造形大学7号館
       { lat: 35.6167, lng: 139.3334 }, // 東京造形大学10号館
+      // 必要に応じて他の位置を追加
+      // 小数第4位を誤差する(0.0001ずれる)と10mの誤差(経度、緯度両方で14m)になる。
+      // よって少数第4位までは確実に記載する
     ];
 
     // スタンプの履歴
@@ -127,32 +137,28 @@
             // ダイアログ表示の制御
             const currentTime = new Date().getTime();
             if (currentTime - lastDialogTime >= dialogInterval) {
+              // ユーザーがスタンプの近くにいるか確認
               let stamped = false;
-
               stampLocations.forEach(location => {
                 const distance = calculateDistance(userLocation, location);
                 const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
-
-                // スタンプの範囲内かつ未スタンプの場所
+                //ユーザーがスタンプの近くにいて、スタンプの位置との距離が100m未満であるかの判定をしている
                 if (distance < 100 && !stamped && !stampedHistory.includes(locationKey)) {
+                  alert('Stamped!');
+                  stamped = true;
+
                   // スタンプが完了した場所の位置情報を履歴に追加
                   stampedHistory.push(locationKey);
 
+                  // 履歴を表示
+                  const stampedInfo = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
+                  document.getElementById('completedStamps').innerHTML += `<p>${stampedInfo}</p>`;
+
+                  // 表示する手掛かりの情報
+                  displayClueInfo(location);
+
                   // ダイアログを表示した時刻を更新
                   lastDialogTime = currentTime;
-
-                  // スタンプの範囲内で探索エリア内外の判定
-                  if (isInsideArea(userLocation)) {
-                    // 東京造形大学編の表示
-                    document.getElementById('completedStamps').innerHTML += "<p>東京造形大学編</p>";
-                    // 手掛かり情報の表示
-                    displayClueInfo(location);
-                  } else {
-                    // 探索外ですの表示
-                    document.getElementById('completedStamps').innerHTML += "<p>探索外です</p>";
-                  }
-
-                  stamped = true;
                 }
               });
             }
@@ -175,8 +181,8 @@
       const deltaLng = toRadians(point2.lng - point1.lng);
 
       const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-        Math.cos(lat1) * Math.cos(lat2) *
-        Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
+                Math.cos(lat1) * Math.cos(lat2) *
+                Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
 
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
@@ -198,24 +204,22 @@
       );
     }
 
-    // スタンプの履歴に応じて手掛かりの情報を表示
+    // 表示する手掛かりの情報
     function displayClueInfo(location) {
-      const stampedInfo = getClueInfo(location);
-      document.getElementById('completedStamps').innerHTML += `<p>${stampedInfo}</p>`;
-    }
-
-    // スタンプ位置に対応する手掛かりの情報を取得
-    function getClueInfo(location) {
       const clues = {
-        "35.6152-139.3349": "手掛かり1",
-        "35.6157-139.3333": "手掛かり2",
-        "35.6167-139.3334": "手掛かり3",
-        "35.6068-139.3319": "手掛かり4",
-        "35.5926-139.4081": "手掛かり0",
+        '35.6152-139.3349': '手掛かり1',
+        '35.6157-139.3333': '手掛かり2',
+        '35.6167-139.3334': '手掛かり3',
+        '35.6068-139.3319': '手掛かり4',
+        '35.5926-139.4081': '手掛かり0',
       };
 
       const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
-      return clues[locationKey] || "";
+      const clueInfo = clues[locationKey];
+
+      if (clueInfo) {
+        document.getElementById('completedStamps').innerHTML += `<p>${clueInfo}</p>`;
+      }
     }
 
     // ページ読み込み時に確認ポップアップを表示
