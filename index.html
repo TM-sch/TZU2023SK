@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,70 +23,66 @@
       font-size: 18px;
     }
 
-#gameStartPopup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+    #gameStartPopup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-.popup-content {
-  position: relative;
-  max-width: 100%; /* 画面サイズに応じて調整 */
-  height: 100%;/* 画面サイズに応じて調整 */
-  background: url('Top-Img.png') center center / cover no-repeat; /* 背景画像をセット */
-  text-align: center;
-}
+    .popup-content {
+      position: relative;
+      max-width: 100%;
+      height: 100%;
+      background: url('Top-Img.png') center center / cover no-repeat;
+      text-align: center;
+    }
 
-.overlay-content {
-  display: flex;
-  flex-direction: column; /* コンテンツを縦方向に配置 */
-  align-items: center; /* 画面中央にコンテンツを配置 */
-  justify-content: center; /* 画面中央にコンテンツを配置 */
-  height: 100%; /* 親要素（popup-content）の高さいっぱいに広がるように */
-  padding: 20px; /* 適切な余白を調整 */
-  color: #5f5f5f;
-  font-size: 2rem;
-}
+    .overlay-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 20px;
+      color: #5f5f5f;
+      font-size: 2rem;
+    }
 
+    .Btytle {
+      width: 80%;
+    }
 
-.Btytle {
-  width: 80%; /* もしくは適切なサイズに調整 */
-  /*height: auto;*/
-}
-.overlay-content button {
-  background-color: #12335f;
-  color: white;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-.overlay-content button:hover {
-  background-color: #fff;
-}
+    .overlay-content button {
+      background-color: #12335f;
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .overlay-content button:hover {
+      background-color: #fff;
+    }
 
   </style>
 </head>
-
 <body>
-  <!-- ヘッダー -->
   <h1>スタンプラリー</h1>
-  <!-- 完了したスタンプの表示領域 -->
   <div id="completedStamps"></div>
-
+  
   <!-- ゲーム開始の確認ポップアップ -->
   <div id="gameStartPopup">
     <div class="popup-content">
-      <!-- ゲーム開始ポップアップのコンテンツ -->
+      <!-- その上に他の要素 -->
       <div class="overlay-content">
-        <!-- ゲーム開始ポップアップの画像とメッセージ -->
-        <img class="Btytle" src="invader-hunt@2x.png" alt="宇宙人の画像">
+        <img class="Btytle" src="invader-hunt@2x.png" alt="Description of the image">
         <p>ゲームを始めますか？</p>
         <button onclick="startGame()">OK</button>
       </div>
@@ -96,31 +91,24 @@
 
   <!-- ゲームのスクリプト -->
   <script>
-    // 許容されるユーザー位置の偏差
-    const allowedDeviation = 0.03;
-
-    // ゲームが開始されたかどうかのフラグ
     let gameStarted = false;
 
-    // 最後にダイアログを表示した時刻
-    let lastDialogTime = 0;
-
-    // ゲームを開始する関数
     function startGame() {
-      // ゲーム開始ポップアップを非表示にし、ゲームが開始されたフラグを設定
       document.getElementById('gameStartPopup').style.display = 'none';
       gameStarted = true;
-      // ユーザー位置の更新を開始
       updateUserLocation();
     }
 
     // スタンプの位置情報
     const stampLocations = [
-      { lat: 35.6068, lng: 139.3319 },// 相原駅
-      { lat: 35.5926, lng: 139.4081 },// お試し
-      { lat: 35.6152, lng: 139.3349 },// 東京造形大学1号館
-      { lat: 35.6157, lng: 139.3333 },// 東京造形大学7号館
-      { lat: 35.6167, lng: 139.3334 },// 東京造形大学10号館
+      { lat: 35.6068, lng: 139.3319 }, // 相原駅
+      { lat: 35.5926, lng: 139.4081 }, // お試し
+      { lat: 35.6152, lng: 139.3349 }, // 東京造形大学1号館
+      { lat: 35.6157, lng: 139.3333 }, // 東京造形大学7号館
+      { lat: 35.6167, lng: 139.3334 }, // 東京造形大学10号館
+      // 必要に応じて他の位置を追加
+      // 小数第4位を誤差する(0.0001ずれる)と10mの誤差(経度、緯度両方で14m)になる。
+      // よって少数第4位までは確実に記載する
     ];
 
     // スタンプの履歴
@@ -128,6 +116,9 @@
 
     // ダイアログの表示間隔（ミリ秒）
     const dialogInterval = 10000; // 10秒
+
+    // 最後にダイアログを表示した時刻
+    let lastDialogTime = 0;
 
     // ユーザーの位置情報を更新する関数
     function updateUserLocation() {
@@ -144,6 +135,7 @@
             // ダイアログ表示の制御
             const currentTime = new Date().getTime();
             if (currentTime - lastDialogTime >= dialogInterval) {
+              // ユーザーがスタンプの近くにいるか確認
               let stamped = false;
               let outsideExplorationArea = false; // 探索エリア外にいるかどうかを確認するフラグ
 
@@ -152,7 +144,7 @@
                 const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
 
                 // ユーザーが探索エリア外にいるかどうかを確認
-                if (distance > allowedDeviation) {
+                if (distance > 0.03) {
                   outsideExplorationArea = true;
                 }
 
@@ -164,25 +156,17 @@
                   // スタンプが完了した場所の位置情報を履歴に追加
                   stampedHistory.push(locationKey);
 
-                  // 東京造形大学の座標に近い場合、特別なメッセージを表示
-                  if (isTokyoZokei(location.lat, location.lng)) {
-                    document.getElementById('completedStamps').innerHTML += "<p>スタンプラリー - 東京造形大学編</p>";
-                  }
-
-                  // 履歴を表示
-                  const stampedInfo = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
-                  document.getElementById('completedStamps').innerHTML += `<p>${stampedInfo}</p>`;
-
                   // ダイアログを表示した時刻を更新
                   lastDialogTime = currentTime;
+
+                  // 東京造形大学の座標に近いかどうかを確認
+                  if (outsideExplorationArea) {
+                    document.getElementById('completedStamps').innerHTML += "<p>探索外です</p>";
+                  } else {
+                    document.getElementById('completedStamps').innerHTML += "<p>東京造形大学編</p>";
+                  }
                 }
               });
-
-              // 探索エリア外にいる場合、メッセージを表示
-              if (outsideExplorationArea) {
-                alert('探索エリア外です！');
-                return;
-              }
             }
           },
           error => {
@@ -203,8 +187,8 @@
       const deltaLng = toRadians(point2.lng - point1.lng);
 
       const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-        Math.cos(lat1) * Math.cos(lat2) *
-        Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
+                Math.cos(lat1) * Math.cos(lat2) *
+                Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
 
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
@@ -217,18 +201,10 @@
       return degrees * (Math.PI / 180);
     }
 
-    // 東京造形大学の座標に近いかどうかを確認する関数
-    function isTokyoZokei(lat, lng) {
-      const tokyoZokeiLocation = { lat: 35.6152, lng: 139.3348 };
-      const distance = calculateDistance({ lat, lng }, tokyoZokeiLocation);
-      return distance <= allowedDeviation;
-    }
-
     // ページ読み込み時に確認ポップアップを表示
-    window.onload = function () {
+    window.onload = function() {
       document.getElementById('gameStartPopup').style.display = 'block';
     };
   </script>
 </body>
-
 </html>
