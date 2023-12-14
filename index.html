@@ -43,10 +43,14 @@
 }
 
 .overlay-content {
+  display: flex;
+  flex-direction: column; /* コンテンツを縦方向に配置 */
+  align-items: center; /* 画面中央にコンテンツを配置 */
+  justify-content: center; /* 画面中央にコンテンツを配置 */
+  height: 100%; /* 親要素（popup-content）の高さいっぱいに広がるように */
   padding: 20px; /* 適切な余白を調整 */
-  align-items: center;
-  justify-content: center;
 }
+
 
 .Btytle {
   width: 80%; /* もしくは適切なサイズに調整 */
