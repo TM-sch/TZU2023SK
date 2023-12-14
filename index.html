@@ -25,19 +25,28 @@
 
 #gameStartPopup {
   position: fixed;
-  background-color: #A2D6D5;
-  text-align: center;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: block;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .popup-content {
-  /* 画像やテキストが横並びになるように調整 */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  position: relative;
+  max-width: 80%; /* 画面サイズに応じて調整 */
+  background-color: #A2D6D5;
+  text-align: center;
+}
+
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .lasc {
@@ -46,10 +55,15 @@
   display: block;
 }
 
+.overlay-content {
+  padding: 20px; /* 適切な余白を調整 */
+}
+
 .Btytle {
-  width: 80%;
+  width: 100%; /* もしくは適切なサイズに調整 */
   height: auto;
 }
+
 
   </style>
 </head>
@@ -60,12 +74,19 @@
   <!-- ゲーム開始の確認ポップアップ -->
 <div id="gameStartPopup">
   <div class="popup-content">
-    <img class="lasc" src="Top-Img.png" alt="Description of the image">
-    <img class="Btytle" src="invader-hunt@2x.png" alt="Description of the image">
-    <p>ゲームを始めますか？</p>
-    <button onclick="startGame()">OK</button>
+    <!-- 背景画像 -->
+    <div class="background-image">
+      <img class="lasc" src="Top-Img.png" alt="Description of the image">
+    </div>
+    <!-- その上に他の要素 -->
+    <div class="overlay-content">
+      <img class="Btytle" src="invader-hunt@2x.png" alt="Description of the image">
+      <p>ゲームを始めますか？</p>
+      <button onclick="startGame()">OK</button>
+    </div>
   </div>
 </div>
+
 
   <!-- ゲームのスクリプト -->
   <script>
