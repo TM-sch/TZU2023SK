@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -70,13 +71,13 @@
     .overlay-content button:hover {
       background-color: #fff;
     }
-
   </style>
 </head>
+
 <body>
   <h1>スタンプラリー</h1>
   <div id="completedStamps"></div>
-  
+
   <!-- ゲーム開始の確認ポップアップ -->
   <div id="gameStartPopup">
     <div class="popup-content">
@@ -89,16 +90,10 @@
     </div>
   </div>
 
- <!-- ゲームのスクリプト -->
-<script>
+  <!-- ゲームのスクリプト -->
+  <script>
     let gameStarted = false;
-  
-    function startGame() {
-      document.getElementById('gameStartPopup').style.display = 'none';
-      gameStarted = true;
-      updateUserLocation();
-    }
-  
+
     // スタンプの位置情報
     const stampLocations = [
       { lat: 35.6068, lng: 139.3319 }, // 相原駅
@@ -110,16 +105,22 @@
       // 小数第4位を誤差する(0.0001ずれる)と10mの誤差(経度、緯度両方で14m)になる。
       // よって少数第4位までは確実に記載する
     ];
-  
+
     // スタンプの履歴
     const stampedHistory = [];
-  
+
     // ダイアログの表示間隔（ミリ秒）
     const dialogInterval = 10000; // 10秒
-  
+
     // 最後にダイアログを表示した時刻
     let lastDialogTime = 0;
-  
+
+    function startGame() {
+      document.getElementById('gameStartPopup').style.display = 'none';
+      gameStarted = true;
+      updateUserLocation();
+    }
+
     // ユーザーの位置情報を更新する関数
     function updateUserLocation() {
       // ゲームが開始されている場合のみ位置情報を更新
@@ -131,32 +132,29 @@
               lat: position.coords.latitude,
               lng: position.coords.longitude,
             };
-  
+
             // ダイアログ表示の制御
             const currentTime = new Date().getTime();
             if (currentTime - lastDialogTime >= dialogInterval) {
+              // ユーザーがスタンプの近くにいるか確認
               let stamped = false;
-  
               stampLocations.forEach(location => {
                 const distance = calculateDistance(userLocation, location);
                 const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
-  
-                // スタンプの範囲内かつ未スタンプの場所
+                // ユーザーがスタンプの近くにいて、スタンプの位置との距離が100m未満であるかの判定をしている
                 if (distance < 100 && !stamped && !stampedHistory.includes(locationKey)) {
+                  alert('Stamped!');
+                  stamped = true;
+
                   // スタンプが完了した場所の位置情報を履歴に追加
                   stampedHistory.push(locationKey);
-  
+
+                  // 履歴を表示
+                  const stampedInfo = `Stamped! Location: Lat ${location.lat}, Lng ${location.lng}`;
+                  document.getElementById('completedStamps').innerHTML += `<p>${stampedInfo}</p>`;
+
                   // ダイアログを表示した時刻を更新
                   lastDialogTime = currentTime;
-  
-                  // スタンプの範囲内で探索エリア内外の判定
-                  if (isInsideArea(userLocation)) {
-                    document.getElementById('completedStamps').innerHTML += "<p>東京造形大学編</p>";
-                  } else {
-                    document.getElementById('completedStamps').innerHTML += "<p>探索外です</p>";
-                  }
-  
-                  stamped = true;
                 }
               });
             }
@@ -169,7 +167,7 @@
         console.error('Geolocation is not supported by this browser or the game has not started yet.');
       }
     }
-  
+
     // 2つの地点間の距離を計算する関数
     function calculateDistance(point1, point2) {
       const R = 6371e3; // 地球の半径（メートル）
@@ -177,36 +175,28 @@
       const lat2 = toRadians(point2.lat);
       const deltaLat = toRadians(point2.lat - point1.lat);
       const deltaLng = toRadians(point2.lng - point1.lng);
-  
+
       const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-                Math.cos(lat1) * Math.cos(lat2) *
-                Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
-  
+        Math.cos(lat1) * Math.cos(lat2) *
+        Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
+
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  
+
       const distance = R * c;
       return distance;
     }
-  
+
     // 度をラジアンに変換する関数
     function toRadians(degrees) {
       return degrees * (Math.PI / 180);
     }
-  
-    // 探索エリア内外の判定
-    function isInsideArea(userLocation) {
-      // 指定された範囲内かどうかを判定
-      return (
-        userLocation.lat >= 35.6058 && userLocation.lat <= 35.6184 &&
-        userLocation.lng >= 139.3314 && userLocation.lng <= 139.3359
-      );
-    }
-  
+
     // ページ読み込み時に確認ポップアップを表示
-    window.onload = function() {
+    window.onload = function () {
       document.getElementById('gameStartPopup').style.display = 'block';
     };
   </script>
-  
+
 </body>
+
 </html>
