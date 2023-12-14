@@ -23,36 +23,34 @@
       font-size: 18px;
     }
 
-    #gameStartPopup {
-      position: fixed;
-      background-color: #A2D6D5;
-      text-align: center;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      display: block;
-    }
+#gameStartPopup {
+  position: fixed;
+  background-color: #A2D6D5;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
+}
 
-    #gameStartPopup p {
-      color: #000;
-    }
+.popup-content {
+  /* 画像やテキストが横並びになるように調整 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-    #gameStartPopup button {
-      padding: 10px;
-      margin-top: 10px;
-      cursor: pointer;
-    }
+.lasc {
+  width: 100%;
+  height: auto;
+  display: block;
+}
 
-    .lasc {
-      width: 100%; /* 幅を100%に設定 */
-      height: auto; /* 高さを自動調整 */
-      display: block;
-    }
+.Btytle {
+  width: 80%;
+  height: auto;
+}
 
-    .Btytle {
-      width: 80%;
-      height: auto;
-    }
   </style>
 </head>
 <body>
@@ -60,12 +58,14 @@
   <div id="completedStamps"></div>
   
   <!-- ゲーム開始の確認ポップアップ -->
-  <div id="gameStartPopup">
+<div id="gameStartPopup">
+  <div class="popup-content">
     <img class="lasc" src="Top-Img.png" alt="Description of the image">
     <img class="Btytle" src="invader-hunt@2x.png" alt="Description of the image">
     <p>ゲームを始めますか？</p>
     <button onclick="startGame()">OK</button>
   </div>
+</div>
 
   <!-- ゲームのスクリプト -->
   <script>
