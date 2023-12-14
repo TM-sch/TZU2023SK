@@ -122,61 +122,64 @@
 
     // ユーザーの位置情報を更新する関数
     function updateUserLocation() {
-      // ゲームが開始されている場合のみ位置情報を更新
-      if (navigator.geolocation && gameStarted) {
-        navigator.geolocation.getCurrentPosition(
-          position => {
-            // ユーザーの位置情報
-            const userLocation = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            };
+  // ゲームが開始されている場合のみ位置情報を更新
+  if (navigator.geolocation && gameStarted) {
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        // ユーザーの位置情報
+        const userLocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
 
-            // ダイアログ表示の制御
-            const currentTime = new Date().getTime();
-            if (currentTime - lastDialogTime >= dialogInterval) {
-              // ユーザーがスタンプの近くにいるか確認
-              let stamped = false;
-              let outsideExplorationArea = false; // 探索エリア外にいるかどうかを確認するフラグ
+        // ダイアログ表示の制御
+        const currentTime = new Date().getTime();
+        if (currentTime - lastDialogTime >= dialogInterval) {
+          let stamped = false;
+          let outsideExplorationArea = false; // 探索エリア外にいるかどうかを確認するフラグ
 
-              stampLocations.forEach(location => {
-                const distance = calculateDistance(userLocation, location);
-                const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
+          stampLocations.forEach(location => {
+            const distance = calculateDistance(userLocation, location);
+            const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
 
-                // ユーザーが探索エリア外にいるかどうかを確認
-                if (distance > 0.03) {
-                  outsideExplorationArea = true;
-                }
-
-                // ユーザーがスタンプの近くにいて、スタンプの位置との距離が100m未満であるかの判定をしている
-                if (distance < 100 && !stamped && !stampedHistory.includes(locationKey)) {
-                  alert('Stamped!');
-                  stamped = true;
-
-                  // スタンプが完了した場所の位置情報を履歴に追加
-                  stampedHistory.push(locationKey);
-
-                  // ダイアログを表示した時刻を更新
-                  lastDialogTime = currentTime;
-
-                  // 東京造形大学の座標に近いかどうかを確認
-                  if (outsideExplorationArea) {
-                    document.getElementById('completedStamps').innerHTML += "<p>探索外です</p>";
-                  } else {
-                    document.getElementById('completedStamps').innerHTML += "<p>東京造形大学編</p>";
-                  }
-                }
-              });
+            // ユーザーが探索エリア外にいるかどうかを確認
+            if (distance > 0.03) {
+              outsideExplorationArea = true;
             }
-          },
-          error => {
-            console.error('Error getting user location:', error);
-          }
-        );
-      } else {
-        console.error('Geolocation is not supported by this browser or the game has not started yet.');
+
+            // ユーザーがスタンプの近くにいて、スタンプの位置との距離が100m未満であるかの判定をしている
+            if (distance < 100 && !stamped && !stampedHistory.includes(locationKey)) {
+              alert('Stamped!');
+              stamped = true;
+
+              // スタンプが完了した場所の位置情報を履歴に追加
+              stampedHistory.push(locationKey);
+
+              // ダイアログを表示した時刻を更新
+              lastDialogTime = currentTime;
+
+              // 東京造形大学の座標に近いかどうかを確認
+              if (outsideExplorationArea) {
+                document.getElementById('completedStamps').innerHTML += "<p>探索外です</p>";
+              } else {
+                document.getElementById('completedStamps').innerHTML += "<p>東京造形大学編</p>";
+              }
+            }
+          });
+
+          // outsideExplorationArea フラグをリセット
+          outsideExplorationArea = false;
+        }
+      },
+      error => {
+        console.error('Error getting user location:', error);
       }
-    }
+    );
+  } else {
+    console.error('Geolocation is not supported by this browser or the game has not started yet.');
+  }
+}
+
 
     // 2つの地点間の距離を計算する関数
     function calculateDistance(point1, point2) {
