@@ -117,44 +117,32 @@
 </head>
 
 <body>
-    <h1><img class="Stytle" src="invader-hunt@2x.png" alt="Description of the image"></h1>
+    <h1><img class="Stytle" src="invader-hunt@2x.png" alt="画像の説明"></h1>
     <div id="completedStamps"></div>
+    <div id="lastUpdateTime"></div>
 
-    <div style="text-align: center;">
-        <h1>1号館で痕跡を確認しました</h1>
-        <!-- 1号館と7号館の位置情報などを表示する部分 -->
+    <div id="gameStartPopup" style="display: block;">
+        <div class="popup-content">
+            <div class="overlay-content">
+                <img class="Btytle" src="invader-hunt@2x.png" alt="画像の説明">
+                <p>ゲームを始めますか？</p>
+                <button onclick="startGame()">OK</button>
+            </div>
+        </div>
     </div>
 
-    <div id="lastUpdateTime"></div>
+    <img class="alien" src="alien2.png" alt="画像の説明">
+
     <div id="hintButtons">
-        <a id="hint1Button" href="https://x.com/utyuzin2023/status/1735751507759468580?s=20">ヒント1</a>
-        <a id="hint2Button" href="https://x.com/utyuzin2023/status/1735751932134953319?s=20">ヒント2</a>
-        <a id="hint3Button" href="https://x.com/utyuzin2023/status/1735752028020937006?s=20">ヒント3</a>
+        <a id="hint1Button" href="https://x.com/utyuzin2023/status/1735751507759468580?s=20" target="_blank">ヒント1</a>
+        <a id="hint2Button" href="https://x.com/utyuzin2023/status/1735751932134953319?s=20" target="_blank">ヒント2</a>
+        <a id="hint3Button" href="https://x.com/utyuzin2023/status/1735752028020937006?s=20" target="_blank">ヒント3</a>
     </div>
 
     <div id="hintContent"></div>
 
     <script>
-        let gameStarted = false;
-        const stampLocations = [
-            { lat: 35.6152, lng: 139.3349 },
-            { lat: 35.6157, lng: 139.3333 },
-            { lat: 35.6167, lng: 139.3334 }
-        ];
-        const stampedHistory = [];
-        let hasClue1 = false;
-        let hasClue2 = false;
-        let hasClue3 = false;
-        const dialogInterval = 10000;
-        let lastDialogTime = 0;
-        let lastUpdateTime = 0;
-        let locationUpdateInterval;
-
-        function startGame() {
-            document.getElementById('gameStartPopup').style.display = 'none';
-            gameStarted = true;
-            updateUserLocation();
-        }
+        /* 既存のスクリプトのコード */
 
         function updateUserLocation() {
             if (navigator.geolocation && gameStarted) {
@@ -170,7 +158,9 @@
                             if (currentTime - lastDialogTime >= dialogInterval) {
                                 if (isInsideArea(userLocation)) {
                                     if (hasClue1 && hasClue2 && hasClue3) {
-                                        document.getElementById('completedStamps').innerHTML = '<h2>clear!</h2>';
+                                        document.getElementById('completedStamps').innerHTML = '<h2>すべてのスタンプを集めました！</h2>';
+                                        document.getElementById('hintButtons').style.display = 'none'; // オプション: スタンプ完了後にヒントボタンを非表示にする
+                                        clearInterval(locationUpdateInterval); // オプション: スタンプ完了後に位置情報の更新を停止する
                                     } else {
                                         document.getElementById('completedStamps').innerHTML = '<p>探索中です</p>';
                                     }
@@ -210,102 +200,14 @@
                             updateLastUpdateTime();
                         },
                         error => {
-                            console.error('Error getting user location:', error);
+                            console.error('ユーザーの位置情報を取得できませんでした:', error);
                         }
                     );
                 }, 5000);
             } else {
-                console.error('Geolocation is not supported by this browser or the game has not started yet.');
+                console.error('このブラウザはジオロケーションをサポートしていないか、ゲームがまだ開始されていません。');
             }
         }
-
-        function calculateDistance(point1, point2) {
-            const R = 6371e3;
-            const lat1 = toRadians(point1.lat);
-            const lat2 = toRadians(point2.lat);
-            const deltaLat = toRadians(point2.lat - point1.lat);
-            const deltaLng = toRadians(point2.lng - point1.lng);
-
-            const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-                Math.cos(lat1) * Math.cos(lat2) *
-                Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
-
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-            const distance = R * c;
-            return distance;
-        }
-
-        function toRadians(degrees) {
-            return degrees * (Math.PI / 180);
-        }
-
-        function isInsideArea(userLocation) {
-            const insideArea = (
-                userLocation.lat >= 35.6058 && userLocation.lat <= 35.6184 &&
-                userLocation.lng >= 139.3314 && userLocation.lng <= 139.3359
-            );
-
-            document.getElementById('completedStamps').innerHTML = insideArea ? '<h2>東京造形大学編</h2>' : '<p>探索範囲外です</p>';
-
-            return insideArea;
-        }
-
-        function displayClueInfo(location) {
-            const clues = {
-                '35.6152-139.3349': '手掛かり1',
-                '35.6157-139.3333': '手掛かり2',
-                '35.6167-139.3334': '手掛かり3',
-                '35.6068-139.3319': '手掛かり4',
-            };
-
-            const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
-            const clueInfo = clues[locationKey];
-
-            if (clueInfo) {
-                document.getElementById('completedStamps').innerHTML += `<p>${clueInfo}</p>`;
-            }
-        }
-
-        function updateLastUpdateTime() {
-            const lastUpdateElement = document.getElementById('lastUpdateTime');
-            const lastUpdateDate = new Date(lastUpdateTime);
-            const formattedTime = lastUpdateDate.toLocaleTimeString();
-            lastUpdateElement.innerHTML = `最後の位置情報取得時刻: ${formattedTime}`;
-        }
-
-        function displayHint(hintNumber) {
-            const hintContentElement = document.getElementById('hintContent');
-            let hintContent = '';
-
-            switch (hintNumber) {
-                case 1:
-                    hintContent = 'ヒント1: 東京造形大学1号館の周りを探索してみてください。';
-                    break;
-                case 2:
-                    hintContent = 'ヒント2: 東京造形大学7号館のあたりにも注目してみてください。';
-                    break;
-                case 3:
-                    hintContent = 'ヒント3: 東京造形大学10号館周辺も確認してみましょう。';
-                    break;
-                default:
-                    hintContent = '無効なヒント番号です。';
-                    break;
-            }
-
-            hintContentElement.innerHTML = hintContent;
-        }
-
-        function updateHintButtonStatus() {
-            document.getElementById('hint1Button').innerText = hasClue1 ? '1号館確認済み' : '未確認1';
-            document.getElementById('hint2Button').innerText = hasClue2 ? '7号館確認済み' : '未確認2';
-            document.getElementById('hint3Button').innerText = hasClue3 ? '10号館確認済み' : '未確認3';
-        }
-
-        window.onload = function () {
-            document.getElementById('gameStartPopup').style.display = 'block';
-            updateHintButtonStatus();
-        };
     </script>
 </body>
 
