@@ -116,11 +116,13 @@
             </div>
         </div>
     </div>
-
+    
+        <img class="alien" src="alien.png" alt="Description of the image">
+    
     <div id="hintButtons">
-        <button onclick="displayHint(1)">ヒント1</button>
-        <button onclick="displayHint(2)">ヒント2</button>
-        <button onclick="displayHint(3)">ヒント3</button>
+        <button id="hint1Button" onclick="displayHint(1)">ヒント1</button>
+        <button id="hint2Button" onclick="displayHint(2)">ヒント2</button>
+        <button id="hint3Button" onclick="displayHint(3)">ヒント3</button>
     </div>
 
     <div id="hintContent"></div>
@@ -161,23 +163,7 @@
         function startGame() {
             document.getElementById('gameStartPopup').style.display = 'none';
             gameStarted = true;
-            // 手動で位置情報を設定して updateUserLocation を呼び出す
-            setLocationManually();
             updateUserLocation();
-        }
-
-        // 手動で位置情報を設定する関数
-        function setLocationManually() {
-            navigator.geolocation = {
-                getCurrentPosition: function (successCallback, errorCallback, options) {
-                    successCallback({
-                        coords: {
-                            latitude: 35.6152,
-                            longitude: 139.3349
-                        }
-                    });
-                }
-            };
         }
 
         // ユーザーの位置情報を更新する関数
@@ -237,6 +223,9 @@
 
                                             // ダイアログを表示した時刻を更新
                                             lastDialogTime = currentTime;
+
+                                            // ヒントボタンの上に表示
+                                            updateHintButtonStatus();
                                         }
                                     });
                                 } else {
@@ -258,8 +247,8 @@
             }
         }
 
-        // 2つの地点間の距離を計算する関数
-        function calculateDistance(point1, point2) {
+         // 2つの地点間の距離を計算する関数
+         function calculateDistance(point1, point2) {
             const R = 6371e3; // 地球の半径（メートル）
             const lat1 = toRadians(point1.lat);
             const lat2 = toRadians(point2.lat);
@@ -343,9 +332,18 @@
             hintContentElement.innerHTML = hintContent;
         }
 
+        // ヒントボタンの上にスタンプの取得状態を表示する関数
+        function updateHintButtonStatus() {
+            document.getElementById('hint1Button').innerText = hasClue1 ? '1号館確認済み' : '1号館未確認';
+            document.getElementById('hint2Button').innerText = hasClue2 ? '7号館確認済み' : '7号館未確認';
+            document.getElementById('hint3Button').innerText = hasClue3 ? '10号館確認済み' : '10号館未確認';
+        }
+
         // ページ読み込み時に確認ポップアップを表示
         window.onload = function () {
             document.getElementById('gameStartPopup').style.display = 'block';
+            // ヒントボタンの初期表示
+            updateHintButtonStatus();
         };
     </script>
 </body>
