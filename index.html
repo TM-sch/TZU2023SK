@@ -66,6 +66,7 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            margin: 5px;
         }
 
         .overlay-content button:hover {
@@ -84,6 +85,17 @@
             text-align: center;
             font-size: 14px;
             margin-top: 10px;
+        }
+
+        #hintButtons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        #hintContent {
+            text-align: left;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -104,6 +116,14 @@
             </div>
         </div>
     </div>
+
+    <div id="hintButtons">
+        <button onclick="displayHint(1)">ヒント1</button>
+        <button onclick="displayHint(2)">ヒント2</button>
+        <button onclick="displayHint(3)">ヒント3</button>
+    </div>
+
+    <div id="hintContent"></div>
 
     <!-- ゲームのスクリプト -->
     <script>
@@ -207,7 +227,7 @@
                                     document.getElementById('completedStamps').innerHTML = '<p>探索範囲外です</p>';
                                 }
                             }
-
+                            
                             // 最後に位置情報を取得した時刻を更新
                             lastUpdateTime = currentTime;
                             updateLastUpdateTime();
@@ -282,6 +302,29 @@
             const lastUpdateDate = new Date(lastUpdateTime);
             const formattedTime = lastUpdateDate.toLocaleTimeString();
             lastUpdateElement.innerHTML = `最後の位置情報取得時刻: ${formattedTime}`;
+        }
+
+        // ヒントを表示する関数
+        function displayHint(hintNumber) {
+            const hintContentElement = document.getElementById('hintContent');
+            let hintContent = '';
+
+            switch (hintNumber) {
+                case 1:
+                    hintContent = 'ヒント1: 東京造形大学1号館の周りを探索してみてください。';
+                    break;
+                case 2:
+                    hintContent = 'ヒント2: 東京造形大学7号館のあたりにも注目してみてください。';
+                    break;
+                case 3:
+                    hintContent = 'ヒント3: 東京造形大学10号館周辺も確認してみましょう。';
+                    break;
+                default:
+                    hintContent = '無効なヒント番号です。';
+                    break;
+            }
+
+            hintContentElement.innerHTML = hintContent;
         }
 
         // ページ読み込み時に確認ポップアップを表示
