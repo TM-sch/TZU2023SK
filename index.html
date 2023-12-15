@@ -105,7 +105,6 @@
 
         // スタンプの位置情報
         const stampLocations = [
-            { lat: 35.6068, lng: 139.3319 }, // 相原駅
             { lat: 35.6152, lng: 139.3349 }, // 東京造形大学1号館
             { lat: 35.6157, lng: 139.3333 }, // 東京造形大学7号館
             { lat: 35.6167, lng: 139.3334 }  // 東京造形大学10号館
@@ -139,7 +138,7 @@
         function updateUserLocation() {
             // ゲームが開始されている場合のみ位置情報を更新
             if (navigator.geolocation && gameStarted) {
-                navigator.geolocation.getCurrentPosition(
+                navigator.geolocation.watchPosition(
                     position => {
                         // ユーザーの位置情報
                         const userLocation = {
