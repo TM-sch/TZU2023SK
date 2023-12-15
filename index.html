@@ -183,7 +183,7 @@
                                 // 範囲内外の表示
                                 if (isInsideArea(userLocation)) {
                                     if (hasClue1 && hasClue2 && hasClue3) {
-                                        document.getElementById('completedStamps').innerHTML = '<h2>東京造形大学編</h2>';
+                                        document.getElementById('completedStamps').innerHTML = '<h2>clear!</h2>';
                                     } else {
                                         document.getElementById('completedStamps').innerHTML = '<p>探索中です</p>';
                                     }
@@ -227,7 +227,7 @@
                                     document.getElementById('completedStamps').innerHTML = '<p>探索範囲外です</p>';
                                 }
                             }
-                            
+
                             // 最後に位置情報を取得した時刻を更新
                             lastUpdateTime = currentTime;
                             updateLastUpdateTime();
