@@ -171,7 +171,64 @@
                 locationUpdateInterval = setInterval(() => {
                     navigator.geolocation.getCurrentPosition(
                         position => {
-                            // 位置情報を扱うコード（変更なし）
+                            
+                            // ユーザーの位置情報
+                            const userLocation = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude,
+                            };
+
+                            // ダイアログ表示の制御
+                            const currentTime = new Date().getTime();
+                            if (currentTime - lastDialogTime >= dialogInterval) {
+                                // 範囲内外の表示
+                                if (isInsideArea(userLocation)) {
+                                    if (hasClue1 && hasClue2 && hasClue3) {
+                                        document.getElementById('completedStamps').innerHTML = '<h2>clear!</h2>';
+                                    } else {
+                                        document.getElementById('completedStamps').innerHTML = '<p>探索中です</p>';
+                                    }
+
+                                    // ユーザーがスタンプの近くにいるか確認
+                                    let stamped = false;
+                                    let hasClue123 = hasClue1 && hasClue2 && hasClue3;
+                                    stampLocations.forEach(location => {
+                                        const distance = calculateDistance(userLocation, location);
+                                        const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
+
+                                        // ユーザーがスタンプの近くにいて、スタンプの位置との距離が50m未満であるかの判定
+                                        if (distance < 50 && !stamped && (hasClue123 || locationKey === '35.6068-139.3319')) {
+                                            alert('Stamped!');
+                                            stamped = true;
+
+                                            // スタンプが完了した場所の位置情報を履歴に追加
+                                            stampedHistory.push(locationKey);
+
+                                            // 手掛かり1, 2, 3の取得状態を更新
+                                            if (locationKey === '35.6152-139.3349') {
+                                                hasClue1 = true;
+                                            } else if (locationKey === '35.6157-139.3333') {
+                                                hasClue2 = true;
+                                            } else if (locationKey === '35.6167-139.3334') {
+                                                hasClue3 = true;
+                                            }
+
+                                            // 履歴を表示
+                                            const stampedInfo = `Location: Lat ${location.lat}, Lng ${location.lng}`;
+                                            document.getElementById('completedStamps').innerHTML += `<p>${stampedInfo}</p>`;
+
+                                            // 表示する手掛かりの情報
+                                            displayClueInfo(location);
+
+                                            // ダイアログを表示した時刻を更新
+                                            lastDialogTime = currentTime;
+                                        }
+                                    });
+                                } else {
+                                    document.getElementById('completedStamps').innerHTML = '<p>探索範囲外です</p>';
+                                }
+                            }
+
 
                             // 最後に位置情報を取得した時刻を更新
                             lastUpdateTime = new Date().getTime();
@@ -187,34 +244,90 @@
             }
         }
 
-        // 2つの地点間の距離を計算する関数（変更なし）
+        
+        // 2つの地点間の距離を計算する関数
         function calculateDistance(point1, point2) {
-            // 以前のコード
+            const R = 6371e3; // 地球の半径（メートル）
+            const lat1 = toRadians(point1.lat);
+            const lat2 = toRadians(point2.lat);
+            const deltaLat = toRadians(point2.lat - point1.lat);
+            const deltaLng = toRadians(point2.lng - point1.lng);
+
+            const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+                Math.cos(lat1) * Math.cos(lat2) *
+                Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
+
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            const distance = R * c;
+            return distance;
         }
 
-        // 度をラジアンに変換する関数（変更なし）
+        // 度をラジアンに変換する関数
         function toRadians(degrees) {
-            // 以前のコード
+            return degrees * (Math.PI / 180);
         }
 
-        // 探索エリア内外の判定（変更なし）
+        // 探索エリア内外の判定
         function isInsideArea(userLocation) {
-            // 以前のコード
+            // 指定された範囲内かどうかを判定
+            const insideArea = (
+                userLocation.lat >= 35.6058 && userLocation.lat <= 35.6184 &&
+                userLocation.lng >= 139.3314 && userLocation.lng <= 139.3359
+            );
+
+            // 条件に応じて表示を変更
+            document.getElementById('completedStamps').innerHTML = insideArea ? '<h2>東京造形大学編</h2>' : '<p>探索範囲外です</p>';
+
+            return insideArea;
         }
 
-        // 表示する手掛かりの情報（変更なし）
+        // 表示する手掛かりの情報
         function displayClueInfo(location) {
-            // 以前のコード
+            const clues = {
+                '35.6152-139.3349': '手掛かり1',
+                '35.6157-139.3333': '手掛かり2',
+                '35.6167-139.3334': '手掛かり3',
+                '35.6068-139.3319': '手掛かり4',
+            };
+
+            const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
+            const clueInfo = clues[locationKey];
+
+            if (clueInfo) {
+                document.getElementById('completedStamps').innerHTML += `<p>${clueInfo}</p>`;
+            }
         }
 
-        // 最後に位置情報を取得した時刻を表示する関数（変更なし）
+        // 最後に位置情報を取得した時刻を表示する関数
         function updateLastUpdateTime() {
-            // 以前のコード
+            const lastUpdateElement = document.getElementById('lastUpdateTime');
+            const lastUpdateDate = new Date(lastUpdateTime);
+            const formattedTime = lastUpdateDate.toLocaleTimeString();
+            lastUpdateElement.innerHTML = `最後の位置情報取得時刻: ${formattedTime}`;
         }
 
-        // ヒントを表示する関数（変更なし）
+        // ヒントを表示する関数
         function displayHint(hintNumber) {
-            // 以前のコード
+            const hintContentElement = document.getElementById('hintContent');
+            let hintContent = '';
+
+            switch (hintNumber) {
+                case 1:
+                    hintContent = 'ヒント1: 東京造形大学1号館の周りを探索してみてください。';
+                    break;
+                case 2:
+                    hintContent = 'ヒント2: 東京造形大学7号館のあたりにも注目してみてください。';
+                    break;
+                case 3:
+                    hintContent = 'ヒント3: 東京造形大学10号館周辺も確認してみましょう。';
+                    break;
+                default:
+                    hintContent = '無効なヒント番号です。';
+                    break;
+            }
+
+            hintContentElement.innerHTML = hintContent;
         }
 
         // ページ読み込み時に確認ポップアップを表示
