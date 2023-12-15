@@ -161,7 +161,23 @@
         function startGame() {
             document.getElementById('gameStartPopup').style.display = 'none';
             gameStarted = true;
+            // 手動で位置情報を設定して updateUserLocation を呼び出す
+            setLocationManually();
             updateUserLocation();
+        }
+
+        // 手動で位置情報を設定する関数
+        function setLocationManually() {
+            navigator.geolocation = {
+                getCurrentPosition: function (successCallback, errorCallback, options) {
+                    successCallback({
+                        coords: {
+                            latitude: 35.6152,
+                            longitude: 139.3349
+                        }
+                    });
+                }
+            };
         }
 
         // ユーザーの位置情報を更新する関数
@@ -171,7 +187,6 @@
                 locationUpdateInterval = setInterval(() => {
                     navigator.geolocation.getCurrentPosition(
                         position => {
-                            
                             // ユーザーの位置情報
                             const userLocation = {
                                 lat: position.coords.latitude,
@@ -229,7 +244,6 @@
                                 }
                             }
 
-
                             // 最後に位置情報を取得した時刻を更新
                             lastUpdateTime = new Date().getTime();
                             updateLastUpdateTime();
@@ -244,7 +258,6 @@
             }
         }
 
-        
         // 2つの地点間の距離を計算する関数
         function calculateDistance(point1, point2) {
             const R = 6371e3; // 地球の半径（メートル）
