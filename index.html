@@ -83,184 +83,184 @@
   </head>
 
 <body>
-  <h1><img class="Stytle" src="invader-hunt@2x.png" alt="Description of the image"></h1>
-  <div id="completedStamps"></div>
+    <h1><img class="Stytle" src="invader-hunt@2x.png" alt="Description of the image"></h1>
+    <div id="completedStamps"></div>
 
-  <!-- ゲーム開始の確認ポップアップ -->
-  <div id="gameStartPopup">
-    <div class="popup-content">
-      <!-- その上に他の要素 -->
-      <div class="overlay-content">
-        <img class="Btytle" src="invader-hunt@2x.png" alt="Description of the image">
-        <p>ゲームを始めますか？</p>
-        <button onclick="startGame()">OK</button>
-      </div>
+    <!-- ゲーム開始の確認ポップアップ -->
+    <div id="gameStartPopup">
+        <div class="popup-content">
+            <!-- その上に他の要素 -->
+            <div class="overlay-content">
+                <img class="Btytle" src="invader-hunt@2x.png" alt="Description of the image">
+                <p>ゲームを始めますか？</p>
+                <button onclick="startGame()">OK</button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- ゲームのスクリプト -->
-  <script>
-    // ゲームの開始状態
-    let gameStarted = false;
+    <!-- ゲームのスクリプト -->
+    <script>
+        // ゲームの開始状態
+        let gameStarted = false;
 
-    // スタンプの位置情報
-    const stampLocations = [
-      { lat: 35.6068, lng: 139.3319 }, // 相原駅
-      { lat: 35.6152, lng: 139.3349 }, // 東京造形大学1号館
-      { lat: 35.6157, lng: 139.3333 }, // 東京造形大学7号館
-      { lat: 35.6167, lng: 139.3334 }, // 東京造形大学10号館
-      // 必要に応じて他の位置を追加
-      // 小数第4位を誤差する(0.0001ずれる)と10mの誤差(経度、緯度両方で14m)になる。
-      // よって少数第4位までは確実に記載する
-    ];
+        // スタンプの位置情報
+        const stampLocations = [
+            { lat: 35.6068, lng: 139.3319 }, // 相原駅
+            { lat: 35.6152, lng: 139.3349 }, // 東京造形大学1号館
+            { lat: 35.6157, lng: 139.3333 }, // 東京造形大学7号館
+            { lat: 35.6167, lng: 139.3334 }, // 東京造形大学10号館
+            // 必要に応じて他の位置を追加
+            // 小数第4位を誤差する(0.0001ずれる)と10mの誤差(経度、緯度両方で14m)になる。
+            // よって少数第4位までは確実に記載する
+        ];
 
-    // スタンプの履歴
-    const stampedHistory = [];
+        // スタンプの履歴
+        const stampedHistory = [];
 
-    // 手掛かり1, 2, 3の取得状態
-    let hasClue1 = false;
-    let hasClue2 = false;
-    let hasClue3 = false;
+        // 手掛かり1, 2, 3の取得状態
+        let hasClue1 = false;
+        let hasClue2 = false;
+        let hasClue3 = false;
 
-    // ダイアログの表示間隔（ミリ秒）
-    const dialogInterval = 10000; // 10秒
+        // ダイアログの表示間隔（ミリ秒）
+        const dialogInterval = 10000; // 10秒
 
-    // 最後にダイアログを表示した時刻
-    let lastDialogTime = 0;
+        // 最後にダイアログを表示した時刻
+        let lastDialogTime = 0;
 
-    // ゲーム開始関数
-    function startGame() {
-      document.getElementById('gameStartPopup').style.display = 'none';
-      gameStarted = true;
-      updateUserLocation();
-    }
+        // ゲーム開始関数
+        function startGame() {
+            document.getElementById('gameStartPopup').style.display = 'none';
+            gameStarted = true;
+            updateUserLocation();
+        }
 
-    // ユーザーの位置情報を更新する関数
-    function updateUserLocation() {
-      // ゲームが開始されている場合のみ位置情報を更新
-      if (navigator.geolocation && gameStarted) {
-        navigator.geolocation.getCurrentPosition(
-          position => {
-            // ユーザーの位置情報
-            const userLocation = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
+        // ユーザーの位置情報を更新する関数
+        function updateUserLocation() {
+            // ゲームが開始されている場合のみ位置情報を更新
+            if (navigator.geolocation && gameStarted) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        // ユーザーの位置情報
+                        const userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude,
+                        };
+
+                        // ダイアログ表示の制御
+                        const currentTime = new Date().getTime();
+                        if (currentTime - lastDialogTime >= dialogInterval) {
+                            // 範囲内外の表示
+                            if (isInsideArea(userLocation)) {
+                                if (hasClue1 && hasClue2 && hasClue3) {
+                                    document.getElementById('completedStamps').innerHTML = '<h2>東京造形大学編</h2>';
+                                } else {
+                                    document.getElementById('completedStamps').innerHTML = '<p>探索中です</p>';
+                                }
+                            } else {
+                                document.getElementById('completedStamps').innerHTML = '<p>探索範囲外です</p>';
+                            }
+
+                            // ユーザーがスタンプの近くにいるか確認
+                            let stamped = false;
+                            let hasClue123 = hasClue1 && hasClue2 && hasClue3;
+                            stampLocations.forEach(location => {
+                                const distance = calculateDistance(userLocation, location);
+                                const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
+
+                                // ユーザーがスタンプの近くにいて、スタンプの位置との距離が100m未満であるかの判定
+                                if (distance < 100 && !stamped && (hasClue123 || locationKey === '35.6068-139.3319')) {
+                                    alert('Stamped!');
+                                    stamped = true;
+
+                                    // スタンプが完了した場所の位置情報を履歴に追加
+                                    stampedHistory.push(locationKey);
+
+                                    // 手掛かり1, 2, 3の取得状態を更新
+                                    if (locationKey === '35.6152-139.3349') {
+                                        hasClue1 = true;
+                                    } else if (locationKey === '35.6157-139.3333') {
+                                        hasClue2 = true;
+                                    } else if (locationKey === '35.6167-139.3334') {
+                                        hasClue3 = true;
+                                    }
+
+                                    // 履歴を表示
+                                    const stampedInfo = `Location: Lat ${location.lat}, Lng ${location.lng}`;
+                                    document.getElementById('completedStamps').innerHTML += `<p>${stampedInfo}</p>`;
+
+                                    // 表示する手掛かりの情報
+                                    displayClueInfo(location);
+
+                                    // ダイアログを表示した時刻を更新
+                                    lastDialogTime = currentTime;
+                                }
+                            });
+                        }
+                    },
+                    error => {
+                        console.error('Error getting user location:', error);
+                    }
+                );
+            } else {
+                console.error('Geolocation is not supported by this browser or the game has not started yet.');
+            }
+        }
+
+        // 2つの地点間の距離を計算する関数
+        function calculateDistance(point1, point2) {
+            const R = 6371e3; // 地球の半径（メートル）
+            const lat1 = toRadians(point1.lat);
+            const lat2 = toRadians(point2.lat);
+            const deltaLat = toRadians(point2.lat - point1.lat);
+            const deltaLng = toRadians(point2.lng - point1.lng);
+
+            const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+                Math.cos(lat1) * Math.cos(lat2) *
+                Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
+
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            const distance = R * c;
+            return distance;
+        }
+
+        // 度をラジアンに変換する関数
+        function toRadians(degrees) {
+            return degrees * (Math.PI / 180);
+        }
+
+        // 探索エリア内外の判定
+        function isInsideArea(userLocation) {
+            // 指定された範囲内かどうかを判定
+            return (
+                userLocation.lat >= 35.6058 && userLocation.lat <= 35.6184 &&
+                userLocation.lng >= 139.3314 && userLocation.lng <= 139.3359
+            );
+        }
+
+        // 表示する手掛かりの情報
+        function displayClueInfo(location) {
+            const clues = {
+                '35.6152-139.3349': '手掛かり1',
+                '35.6157-139.3333': '手掛かり2',
+                '35.6167-139.3334': '手掛かり3',
+                '35.6068-139.3319': '手掛かり4',
             };
 
-            // ダイアログ表示の制御
-            const currentTime = new Date().getTime();
-            if (currentTime - lastDialogTime >= dialogInterval) {
-              // 範囲内外の表示
-              if (isInsideArea(userLocation)) {
-                if (hasClue1 && hasClue2 && hasClue3) {
-                  document.getElementById('completedStamps').innerHTML = '<h2>東京造形大学編</h2>';
-                } else {
-                  document.getElementById('completedStamps').innerHTML = '<p>探索中です</p>';
-                }
-              } else {
-                document.getElementById('completedStamps').innerHTML = '<p>探索範囲外です</p>';
-              }
+            const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
+            const clueInfo = clues[locationKey];
 
-              // ユーザーがスタンプの近くにいるか確認
-              let stamped = false;
-              let hasClue123 = hasClue1 && hasClue2 && hasClue3;
-              stampLocations.forEach(location => {
-                const distance = calculateDistance(userLocation, location);
-                const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
-
-                // ユーザーがスタンプの近くにいて、スタンプの位置との距離が100m未満であるかの判定
-                if (distance < 100 && !stamped && (hasClue123 || locationKey === '35.6068-139.3319')) {
-                  alert('Stamped!');
-                  stamped = true;
-
-                  // スタンプが完了した場所の位置情報を履歴に追加
-                  stampedHistory.push(locationKey);
-
-                  // 手掛かり1, 2, 3の取得状態を更新
-                  if (locationKey === '35.6152-139.3349') {
-                    hasClue1 = true;
-                  } else if (locationKey === '35.6157-139.3333') {
-                    hasClue2 = true;
-                  } else if (locationKey === '35.6167-139.3334') {
-                    hasClue3 = true;
-                  }
-
-                  // 履歴を表示
-                  const stampedInfo = `Location: Lat ${location.lat}, Lng ${location.lng}`;
-                  document.getElementById('completedStamps').innerHTML += `<p>${stampedInfo}</p>`;
-
-                  // 表示する手掛かりの情報
-                  displayClueInfo(location);
-
-                  // ダイアログを表示した時刻を更新
-                  lastDialogTime = currentTime;
-                }
-              });
+            if (clueInfo) {
+                document.getElementById('completedStamps').innerHTML += `<p>${clueInfo}</p>`;
             }
-          },
-          error => {
-            console.error('Error getting user location:', error);
-          }
-        );
-      } else {
-        console.error('Geolocation is not supported by this browser or the game has not started yet.');
-      }
-    }
+        }
 
-    // 2つの地点間の距離を計算する関数
-    function calculateDistance(point1, point2) {
-      const R = 6371e3; // 地球の半径（メートル）
-      const lat1 = toRadians(point1.lat);
-      const lat2 = toRadians(point2.lat);
-      const deltaLat = toRadians(point2.lat - point1.lat);
-      const deltaLng = toRadians(point2.lng - point1.lng);
-
-      const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-        Math.cos(lat1) * Math.cos(lat2) *
-        Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
-
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-      const distance = R * c;
-      return distance;
-    }
-
-    // 度をラジアンに変換する関数
-    function toRadians(degrees) {
-      return degrees * (Math.PI / 180);
-    }
-
-    // 探索エリア内外の判定
-    function isInsideArea(userLocation) {
-      // 指定された範囲内かどうかを判定
-      return (
-        userLocation.lat >= 35.6058 && userLocation.lat <= 35.6184 &&
-        userLocation.lng >= 139.3314 && userLocation.lng <= 139.3359
-      );
-    }
-
-    // 表示する手掛かりの情報
-    function displayClueInfo(location) {
-      const clues = {
-        '35.6152-139.3349': '手掛かり1',
-        '35.6157-139.3333': '手掛かり2',
-        '35.6167-139.3334': '手掛かり3',
-        '35.6068-139.3319': '手掛かり4',
-      };
-
-      const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
-      const clueInfo = clues[locationKey];
-
-      if (clueInfo) {
-        document.getElementById('completedStamps').innerHTML += `<p>${clueInfo}</p>`;
-      }
-    }
-
-    // ページ読み込み時に確認ポップアップを表示
-    window.onload = function () {
-      document.getElementById('gameStartPopup').style.display = 'block';
-    };
-  </script>
+        // ページ読み込み時に確認ポップアップを表示
+        window.onload = function () {
+            document.getElementById('gameStartPopup').style.display = 'block';
+        };
+    </script>
 </body>
 
 </html>
