@@ -79,12 +79,19 @@
             top: 0;
             left: 0;
         }
+
+        #lastUpdateTime {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 
 <body>
     <h1><img class="Stytle" src="invader-hunt@2x.png" alt="Description of the image"></h1>
     <div id="completedStamps"></div>
+    <div id="lastUpdateTime"></div>
 
     <!-- ゲーム開始の確認ポップアップ -->
     <div id="gameStartPopup" style="display: block;">
@@ -126,6 +133,9 @@
 
         // 最後にダイアログを表示した時刻
         let lastDialogTime = 0;
+
+        // 最後に位置情報を取得した時刻
+        let lastUpdateTime = 0;
 
         // ゲーム開始関数
         function startGame() {
@@ -196,6 +206,10 @@
                                 document.getElementById('completedStamps').innerHTML = '<p>探索範囲外です</p>';
                             }
                         }
+
+                        // 最後に位置情報を取得した時刻を更新
+                        lastUpdateTime = currentTime;
+                        updateLastUpdateTime();
                     },
                     error => {
                         console.error('Error getting user location:', error);
@@ -258,6 +272,14 @@
             if (clueInfo) {
                 document.getElementById('completedStamps').innerHTML += `<p>${clueInfo}</p>`;
             }
+        }
+
+        // 最後に位置情報を取得した時刻を表示する関数
+        function updateLastUpdateTime() {
+            const lastUpdateElement = document.getElementById('lastUpdateTime');
+            const lastUpdateDate = new Date(lastUpdateTime);
+            const formattedTime = lastUpdateDate.toLocaleTimeString();
+            lastUpdateElement.innerHTML = `最後の位置情報取得時刻: ${formattedTime}`;
         }
 
         // ページ読み込み時に確認ポップアップを表示
