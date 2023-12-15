@@ -71,13 +71,6 @@
       .overlay-content button:hover {
         background-color: #fff;
       }
-    .Stytle {
-        width: 20%;
-        padding: 10px;
-        position: absolute;
-        top: 0;
-        left: 0;
-      }
   
     </style>
   </head>
@@ -154,12 +147,13 @@
 
               // ユーザーがスタンプの近くにいるか確認
               let stamped = false;
+              let hasClue123 = stampedHistory.includes('35.6152-139.3349') && stampedHistory.includes('35.6157-139.3333') && stampedHistory.includes('35.6167-139.3334');
               stampLocations.forEach(location => {
                 const distance = calculateDistance(userLocation, location);
                 const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
 
                 // ユーザーがスタンプの近くにいて、スタンプの位置との距離が100m未満であるかの判定
-                if (distance < 100 && !stamped && !stampedHistory.includes(locationKey)) {
+                if (distance < 100 && !stamped && (hasClue123 || locationKey === '35.6068-139.3319')) {
                   alert('Stamped!');
                   stamped = true;
 
