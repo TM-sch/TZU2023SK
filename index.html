@@ -157,45 +157,45 @@
                                 } else {
                                     document.getElementById('completedStamps').innerHTML = '<p>探索中です</p>';
                                 }
+
+                                // ユーザーがスタンプの近くにいるか確認
+                                let stamped = false;
+                                let hasClue123 = hasClue1 && hasClue2 && hasClue3;
+                                stampLocations.forEach(location => {
+                                    const distance = calculateDistance(userLocation, location);
+                                    const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
+
+                                    // ユーザーがスタンプの近くにいて、スタンプの位置との距離が100m未満であるかの判定
+                                    if (distance < 100 && !stamped && (hasClue123 || locationKey === '35.6068-139.3319')) {
+                                        alert('Stamped!');
+                                        stamped = true;
+
+                                        // スタンプが完了した場所の位置情報を履歴に追加
+                                        stampedHistory.push(locationKey);
+
+                                        // 手掛かり1, 2, 3の取得状態を更新
+                                        if (locationKey === '35.6152-139.3349') {
+                                            hasClue1 = true;
+                                        } else if (locationKey === '35.6157-139.3333') {
+                                            hasClue2 = true;
+                                        } else if (locationKey === '35.6167-139.3334') {
+                                            hasClue3 = true;
+                                        }
+
+                                        // 履歴を表示
+                                        const stampedInfo = `Location: Lat ${location.lat}, Lng ${location.lng}`;
+                                        document.getElementById('completedStamps').innerHTML += `<p>${stampedInfo}</p>`;
+
+                                        // 表示する手掛かりの情報
+                                        displayClueInfo(location);
+
+                                        // ダイアログを表示した時刻を更新
+                                        lastDialogTime = currentTime;
+                                    }
+                                });
                             } else {
                                 document.getElementById('completedStamps').innerHTML = '<p>探索範囲外です</p>';
                             }
-
-                            // ユーザーがスタンプの近くにいるか確認
-                            let stamped = false;
-                            let hasClue123 = hasClue1 && hasClue2 && hasClue3;
-                            stampLocations.forEach(location => {
-                                const distance = calculateDistance(userLocation, location);
-                                const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
-
-                                // ユーザーがスタンプの近くにいて、スタンプの位置との距離が100m未満であるかの判定
-                                if (distance < 100 && !stamped && (hasClue123 || locationKey === '35.6068-139.3319')) {
-                                    alert('Stamped!');
-                                    stamped = true;
-
-                                    // スタンプが完了した場所の位置情報を履歴に追加
-                                    stampedHistory.push(locationKey);
-
-                                    // 手掛かり1, 2, 3の取得状態を更新
-                                    if (locationKey === '35.6152-139.3349') {
-                                        hasClue1 = true;
-                                    } else if (locationKey === '35.6157-139.3333') {
-                                        hasClue2 = true;
-                                    } else if (locationKey === '35.6167-139.3334') {
-                                        hasClue3 = true;
-                                    }
-
-                                    // 履歴を表示
-                                    const stampedInfo = `Location: Lat ${location.lat}, Lng ${location.lng}`;
-                                    document.getElementById('completedStamps').innerHTML += `<p>${stampedInfo}</p>`;
-
-                                    // 表示する手掛かりの情報
-                                    displayClueInfo(location);
-
-                                    // ダイアログを表示した時刻を更新
-                                    lastDialogTime = currentTime;
-                                }
-                            });
                         }
                     },
                     error => {
@@ -233,10 +233,15 @@
         // 探索エリア内外の判定
         function isInsideArea(userLocation) {
             // 指定された範囲内かどうかを判定
-            return (
+            const insideArea = (
                 userLocation.lat >= 35.6058 && userLocation.lat <= 35.6184 &&
                 userLocation.lng >= 139.3314 && userLocation.lng <= 139.3359
             );
+
+            // 条件に応じて表示を変更
+            document.getElementById('completedStamps').innerHTML = insideArea ? '<h2>東京造形大学編</h2>' : '<p>探索範囲外です</p>';
+
+            return insideArea;
         }
 
         // 表示する手掛かりの情報
