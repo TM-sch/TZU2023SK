@@ -152,7 +152,12 @@
                         if (currentTime - lastDialogTime >= dialogInterval) {
                             // 範囲内外の表示
                             if (isInsideArea(userLocation)) {
-                                document.getElementById('completedStamps').innerHTML = '<h2>東京造形大学編</h2>';
+                                if (hasClue1 && hasClue2 && hasClue3) {
+                                    document.getElementById('completedStamps').innerHTML = '<h2>東京造形大学編</h2>';
+                                } else {
+                                    document.getElementById('completedStamps').innerHTML = '<p>探索中です</p>';
+                                }
+
                                 // ユーザーがスタンプの近くにいるか確認
                                 let stamped = false;
                                 let hasClue123 = hasClue1 && hasClue2 && hasClue3;
@@ -160,8 +165,8 @@
                                     const distance = calculateDistance(userLocation, location);
                                     const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
 
-                                    // ユーザーがスタンプの近くにいて、スタンプの位置との距離が100m未満であるかの判定
-                                    if (distance < 100 && !stamped && (hasClue123 || locationKey === '35.6068-139.3319')) {
+                                    // ユーザーがスタンプの近くにいて、スタンプの位置との距離が50m未満であるかの判定
+                                    if (distance < 50 && !stamped && (hasClue123 || locationKey === '35.6068-139.3319')) {
                                         alert('Stamped!');
                                         stamped = true;
 
@@ -232,6 +237,9 @@
                 userLocation.lat >= 35.6058 && userLocation.lat <= 35.6184 &&
                 userLocation.lng >= 139.3314 && userLocation.lng <= 139.3359
             );
+
+            // 条件に応じて表示を変更
+            document.getElementById('completedStamps').innerHTML = insideArea ? '<h2>東京造形大学編</h2>' : '<p>探索範囲外です</p>';
 
             return insideArea;
         }
