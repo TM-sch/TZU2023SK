@@ -90,7 +90,15 @@
         #hintButtons {
             display: flex;
             justify-content: space-around;
-            margin-top: 20px;
+            /*margin-top: 20px;*/
+            background-color: #12335f;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
         }
 
         #hintContent {
@@ -340,9 +348,9 @@
 
         // ヒントボタンの上にスタンプの取得状態を表示する関数
         function updateHintButtonStatus() {
-            document.getElementById('hint1Button').innerText = hasClue1 ? '1号館確認済み' : '1号館未確認';
-            document.getElementById('hint2Button').innerText = hasClue2 ? '7号館確認済み' : '7号館未確認';
-            document.getElementById('hint3Button').innerText = hasClue3 ? '10号館確認済み' : '10号館未確認';
+            document.getElementById('hint1Button').innerText = hasClue1 ? '1号館確認済み' : '未確認1';
+            document.getElementById('hint2Button').innerText = hasClue2 ? '7号館確認済み' : '未確認2';
+            document.getElementById('hint3Button').innerText = hasClue3 ? '10号館確認済み' : '未確認3';
         }
 
         // ページ読み込み時に確認ポップアップを表示
