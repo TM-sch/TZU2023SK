@@ -117,6 +117,11 @@
     // スタンプの履歴
     const stampedHistory = [];
 
+    // 手掛かり1, 2, 3の取得状態
+    let hasClue1 = false;
+    let hasClue2 = false;
+    let hasClue3 = false;
+
     // ダイアログの表示間隔（ミリ秒）
     const dialogInterval = 10000; // 10秒
 
@@ -147,14 +152,18 @@
             if (currentTime - lastDialogTime >= dialogInterval) {
               // 範囲内外の表示
               if (isInsideArea(userLocation)) {
-                document.getElementById('completedStamps').innerHTML = '<h2>東京造形大学編</h2>';
+                if (hasClue1 && hasClue2 && hasClue3) {
+                  document.getElementById('completedStamps').innerHTML = '<h2>東京造形大学編</h2>';
+                } else {
+                  document.getElementById('completedStamps').innerHTML = '<p>探索中です</p>';
+                }
               } else {
                 document.getElementById('completedStamps').innerHTML = '<p>探索範囲外です</p>';
               }
 
               // ユーザーがスタンプの近くにいるか確認
               let stamped = false;
-              let hasClue123 = stampedHistory.includes('35.6152-139.3349') && stampedHistory.includes('35.6157-139.3333') && stampedHistory.includes('35.6167-139.3334');
+              let hasClue123 = hasClue1 && hasClue2 && hasClue3;
               stampLocations.forEach(location => {
                 const distance = calculateDistance(userLocation, location);
                 const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
@@ -166,6 +175,15 @@
 
                   // スタンプが完了した場所の位置情報を履歴に追加
                   stampedHistory.push(locationKey);
+
+                  // 手掛かり1, 2, 3の取得状態を更新
+                  if (locationKey === '35.6152-139.3349') {
+                    hasClue1 = true;
+                  } else if (locationKey === '35.6157-139.3333') {
+                    hasClue2 = true;
+                  } else if (locationKey === '35.6167-139.3334') {
+                    hasClue3 = true;
+                  }
 
                   // 履歴を表示
                   const stampedInfo = `Location: Lat ${location.lat}, Lng ${location.lng}`;
@@ -198,8 +216,8 @@
       const deltaLng = toRadians(point2.lng - point1.lng);
 
       const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-                Math.cos(lat1) * Math.cos(lat2) *
-                Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
+        Math.cos(lat1) * Math.cos(lat2) *
+        Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
 
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
