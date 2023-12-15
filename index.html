@@ -142,7 +142,26 @@
     <div id="hintContent"></div>
 
     <script>
-        /* 既存のスクリプトのコード */
+       let gameStarted = false;
+        const stampLocations = [
+            { lat: 35.6152, lng: 139.3349 },
+            { lat: 35.6157, lng: 139.3333 },
+            { lat: 35.6167, lng: 139.3334 }
+        ];
+        const stampedHistory = [];
+        let hasClue1 = false;
+        let hasClue2 = false;
+        let hasClue3 = false;
+        const dialogInterval = 10000;
+        let lastDialogTime = 0;
+        let lastUpdateTime = 0;
+        let locationUpdateInterval;
+
+        function startGame() {
+            document.getElementById('gameStartPopup').style.display = 'none';
+            gameStarted = true;
+            updateUserLocation();
+        }
 
         function updateUserLocation() {
             if (navigator.geolocation && gameStarted) {
