@@ -190,7 +190,7 @@
                                         const distance = calculateDistance(userLocation, location);
                                         const locationKey = `${location.lat.toFixed(4)}-${location.lng.toFixed(4)}`;
 
-                                        if (distance < 100 && !stamped && (hasClue123 || locationKey === '35.6068-139.3319')) {
+                                        if (distance < 50 && !stamped && (hasClue123 || locationKey === '35.6068-139.3319')) {
                                             alert('Stamped!');
                                             stamped = true;
                                             stampedHistory.push(locationKey);
