@@ -170,10 +170,13 @@
         // 位置情報の自動更新時刻を表示
         function updateLastUpdateTime() {
             const lastUpdateElement = document.getElementById('lastUpdateTime');
-            const lastUpdateDate = new Date(lastUpdateTime);
-            const formattedTime = lastUpdateDate.toLocaleTimeString();
 
-            lastUpdateElement.innerHTML = `最終更新時刻: ${formattedTime}`;
+            setInterval(() => {
+                const lastUpdateDate = new Date(lastUpdateTime);
+                const formattedTime = lastUpdateDate.toLocaleTimeString();
+
+                lastUpdateElement.innerHTML = `最終更新時刻: ${formattedTime}`;
+            }, 1000); // 1000ミリ秒ごとに更新
         }
     
         // ゲーム開始確認
