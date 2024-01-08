@@ -134,9 +134,10 @@
         </div>
     </div>
 
-    <img class="alien" src="alien2.png" alt="画像の説明">
+    
     <a href="https://twitter.com/your_twitter_account" target="_blank">
     <img class="mapB" src="TZU基本MAP_アートボード 1.png" alt="全体マップ"></a>
+    <img class="alien" src="alien2.png" alt="画像の説明">
 
     <!--ヒントボタン-->
     <div id="hintButtons">
@@ -167,24 +168,50 @@
         let lastUpdateTime = 0;//最後にユーザーの位置が更新された時刻
         let locationUpdateInterval;//位置情報の更新間隔
 
+        // 位置情報と時刻を更新
+        function watchUserLocation() {
+            if (navigator.geolocation && gameStarted) {
+                navigator.geolocation.watchPosition(
+                    position => {
+                        const userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude,
+                        };
+
+                        updateLastUpdateTime();
+                        checkStampedLocations(userLocation, new Date().getTime());
+                    },
+                    error => {
+                        handleLocationError(error);
+                    }
+                );
+            } else {
+                handleUnsupportedBrowserError();
+            }
+        }
+
         // 位置情報の自動更新時刻を表示
         function updateLastUpdateTime() {
             const lastUpdateElement = document.getElementById('lastUpdateTime');
+            const lastUpdateDate = new Date();
 
-            setInterval(() => {
-                const lastUpdateDate = new Date(lastUpdateTime);
-                const formattedTime = lastUpdateDate.toLocaleTimeString();
+            const options = {
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: false
+            };
 
-                lastUpdateElement.innerHTML = `最終更新時刻: ${formattedTime}`;
-            }, 1000); // 1000ミリ秒ごとに更新
+            const formattedTime = lastUpdateDate.toLocaleTimeString('ja-JP', options);
+            lastUpdateElement.innerHTML = `最終更新時刻: ${formattedTime}`;
         }
+
     
         // ゲーム開始確認
         function startGame() {
             hideGameStartPopup();
             gameStarted = true;
-            updateUserLocation();
-            updateLastUpdateTime(); // ゲーム開始時にも初回の更新時刻を表示
+            watchUserLocation(); // watchPositionを開始
         }
     
         // ゲーム開始
