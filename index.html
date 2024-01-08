@@ -159,7 +159,7 @@
      <!--パスワード入力-->
     <div id="passform">
         <label for="pass">痕跡 (3文字)</label>
-        <input type="password" id="sAD" name="password" minlength="8" required />
+        <input type="password" id="sAE" name="password" minlength="8" required />
         <input type="button" value="チェック" onclick="checkTrace()" />
     </div>
 
@@ -410,7 +410,7 @@ function updateUserLocation() {
 
         function checkTrace() {
             // パスワード（痕跡）の入力値を取得
-            var passwordInput = document.getElementById("sAD");
+            var passwordInput = document.getElementById("sAE");
             var password = passwordInput.value;
 
             // ここに痕跡をチェックするロジックを追加
