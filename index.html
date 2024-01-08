@@ -144,6 +144,8 @@
         <a id="hint3Button" href="https://x.com/utyuzin2023/status/1735752028020937006?s=20" target="_blank">ヒント3</a>
     </div>
 
+    <div id="lastUpdateTime"></div>
+
     <div id="hintContent"></div>
 
     <script>
@@ -163,12 +165,22 @@
         let lastDialogTime = 0;//最後にダイアログが表示された時刻
         let lastUpdateTime = 0;//最後にユーザーの位置が更新された時刻
         let locationUpdateInterval;//位置情報の更新間隔
+
+        // 位置情報の自動更新時刻を表示
+        function updateLastUpdateTime() {
+            const lastUpdateElement = document.getElementById('lastUpdateTime');
+            const lastUpdateDate = new Date(lastUpdateTime);
+            const formattedTime = lastUpdateDate.toLocaleTimeString();
+
+            lastUpdateElement.innerHTML = `最終更新時刻: ${formattedTime}`;
+        }
     
         // ゲーム開始確認
         function startGame() {
             hideGameStartPopup();
             gameStarted = true;
             updateUserLocation();
+            updateLastUpdateTime(); // ゲーム開始時にも初回の更新時刻を表示
         }
     
         // ゲーム開始
