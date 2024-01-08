@@ -122,7 +122,6 @@
 <body>
     <h1><img class="Stytle" src="invader-hunt@2x.png" alt="画像の説明"></h1>
     <div id="completedStamps"></div>
-    <div id="lastUpdateTime"></div>
     <!--スタート確認画面-->
     <div id="gameStartPopup" style="display: block;">
         <div class="popup-content">
@@ -211,6 +210,7 @@
         function startGame() {
             hideGameStartPopup();
             gameStarted = true;
+            //updateUserLocation();
             watchUserLocation(); // watchPositionを開始
         }
     
@@ -308,9 +308,10 @@
         }
     
         // ジオロケーション非サポート時の処理
-        function handleUnsupportedBrowserError() {
-            console.error('このブラウザはジオロケーションをサポートしていないか、ゲームがまだ開始されていません。');
-        }
+    function handleUnsupportedBrowserError() {
+    console.error('このブラウザはジオロケーションをサポートしていないか、ゲームがまだ開始されていません。');
+    // 適切なエラーメッセージを追加する
+}
     
     </script>
     
