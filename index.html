@@ -137,6 +137,9 @@
             max-width: 400px;
             border-radius: 10px;
         }
+        .passform{
+            justify-content: space-around;
+        }
     </style>
 </head>
 
@@ -147,14 +150,14 @@
     
 
     <div id="completedStamps"></div>
-    
+    <!--基本表示マップ-->
     <a href="https://x.com/utyuzin2023/status/1744349178422231471?s=20" target="_blank">
     <img class="mapB" src="TZU基本MAP_アートボード 1.png" alt="全体マップ"></a>
     <img class="alien" src="alien2.png" alt="画像の説明">
     <div id="completedStamps"></div>
 
      <!--パスワード入力-->
-    <div>
+    <div id="passform">
         <label for="pass">痕跡 (3文字)</label>
         <input type="password" id="pass" name="password" minlength="8" required />
         <input type="submit" value="チェック" />
