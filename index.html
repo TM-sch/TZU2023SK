@@ -132,6 +132,7 @@
     </div>
 
     <img class="alien" src="alien2.png" alt="画像の説明">
+    <img class="mapB" src="TZU1,7,10MAP_アートボード 1.png" alt="全体マップ">
 
     <!--ヒントボタン-->
     <div id="hintButtons">
@@ -147,7 +148,9 @@
         const stampLocations = [
             { lat: 35.6152, lng: 139.3349 }, // 東京造形大学1号館
             { lat: 35.6157, lng: 139.3338 }, // 東京造形大学7号館
-            { lat: 35.6167, lng: 139.3334 }  // 東京造形大学10号館
+            { lat: 35.6167, lng: 139.3334 }, // 東京造形大学10号館
+            { lat: 35.6068, lng: 139.3319 }, //相原駅
+            { lat: 35.6076, lng: 139.3318 } //練習用
         ];
         const stampedHistory = [];//スタンプ履歴
         let hasClue1 = false;
@@ -242,6 +245,8 @@
                 hasClue2 = true;
             } else if (locationKey === '35.6167-139.3334') {
                 hasClue3 = true;
+            }else if (locationKey === '35.6076-139.3318') {
+                hasClue3 = true;
             }
     
             const stampedInfo = `Location: Lat ${location.lat}, Lng ${location.lng}`;
@@ -260,6 +265,7 @@
         function handleUnsupportedBrowserError() {
             console.error('このブラウザはジオロケーションをサポートしていないか、ゲームがまだ開始されていません。');
         }
+    
     </script>
     
 </body>
