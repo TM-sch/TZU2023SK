@@ -159,8 +159,8 @@
      <!--パスワード入力-->
     <div id="passform">
         <label for="pass">痕跡 (3文字)</label>
-        <input type="password" id="pass" name="password" minlength="8" required />
-        <input type="submit" value="チェック" />
+        <input type="password" id="pass" name="password" minlength="sAE" required />
+        <input type="button" value="チェック" onclick="checkTrace()" />
     </div>
 
 
@@ -406,6 +406,24 @@ function updateUserLocation() {
             displayClueInfo(location);
             lastDialogTime = currentTime;
             updateHintButtonStatus();
+        }
+
+        function checkTrace() {
+            // パスワード（痕跡）の入力値を取得
+            var passwordInput = document.getElementById("pass");
+            var password = passwordInput.value;
+
+            // ここに痕跡をチェックするロジックを追加
+            // 例: 痕跡が正しいかどうかをチェックする処理
+
+            // チェックが成功した場合
+            if (password === "正しい痕跡") {
+                // 別のリンクに移動
+                window.location.href = "two-index.html";
+            } else {
+                // チェックが失敗した場合に適切な処理を追加
+                alert("痕跡が正しくありません。");
+            }
         }
     
         // 位置情報取得エラー時の処理
