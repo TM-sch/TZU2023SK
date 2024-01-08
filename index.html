@@ -274,6 +274,58 @@
         function hideGameStartPopup() {
             document.getElementById('gameStartPopup').style.display = 'none';
         }
+
+        //エリア範囲確認
+        function checkArea(userLocation) {
+    const minLat = 35.6058;
+    const maxLat = 35.6184;
+    const minLng = 139.3314;
+    const maxLng = 139.3359;
+
+    if (
+        userLocation.lat >= minLat && userLocation.lat <= maxLat &&
+        userLocation.lng >= minLng && userLocation.lng <= maxLng
+    ) {
+        // エリア内にいる場合の処理
+        document.getElementById('completedStamps').innerHTML = '<p>東京造形大学編</p>';
+        document.getElementById('hintContent').innerHTML = '<p>Hint:3</p>';
+    } else {
+        // エリア外にいる場合の処理
+        document.getElementById('completedStamps').innerHTML = '<p>エリア外です</p>';
+        document.getElementById('hintContent').innerHTML = '';
+    }
+}
+
+// updateUserLocation 関数内で呼び出す箇所
+function updateUserLocation() {
+    // ...
+
+    navigator.geolocation.getCurrentPosition(
+        position => {
+            const userLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+            };
+
+            // エリアのチェック
+            checkArea(userLocation);
+
+            const currentTime = new Date().getTime();
+            if (currentTime - lastDialogTime >= dialogInterval) {
+                // ...
+            }
+
+            lastUpdateTime = currentTime;
+            updateLastUpdateTime();
+        },
+        error => {
+            handleLocationError(error);
+        }
+    );
+
+    // ...
+}
+
     
         // スタンプの位置をチェック
         function checkStampedLocations(userLocation, currentTime) {
