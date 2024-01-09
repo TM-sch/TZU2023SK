@@ -441,33 +441,6 @@ function updateUserLocation() {
 
     // ...
 }
-        // 2つの座標の距離を計算
-function calculateDistance(coord1, coord2) {
-    const lat1 = coord1.lat;
-    const lon1 = coord1.lng;
-    const lat2 = coord2.lat;
-    const lon2 = coord2.lng;
-
-    const R = 6371; // Radius of the Earth in kilometers
-    const dLat = deg2rad(lat2 - lat1);
-    const dLon = deg2rad(lon2 - lon1);
-
-    const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c; // Distance in kilometers
-
-    return distance;
-}
-
-// 度をラジアンに変換
-function deg2rad(deg) {
-    return deg * (Math.PI / 180);
-}
-
 
     
         // スタンプの位置をチェック
@@ -490,35 +463,23 @@ function deg2rad(deg) {
         }
     
         // スタンプが押された時の処理
-        // スタンプが押された時の処理
-function handleStampedLocation(locationKey, location, currentTime) {
-    if (locationKey === '35.6152-139.3349') {
-        hasClue1 = true;
-        displayImage('IMG_3636.png'); // 画像のURLを指定
-    } else if (locationKey === '35.6157-139.3333') {
-        hasClue2 = true;
-        displayImage('area7.png'); // 画像のURLを指定
-    } else if (locationKey === '35.6167-139.3334') {
-        hasClue3 = true;
-        displayImage('area10.png'); // 画像のURLを指定
-    } else if (locationKey === '35.6076-139.3318') {
-        hasClue4 = true;
-        displayImage('alien4.jpg'); // 画像のURLを指定
-    }
-
+        function handleStampedLocation(locationKey, location, currentTime) {
+            if (locationKey === '35.6152-139.3349') {
+                hasClue1 = true;
+            } else if (locationKey === '35.6157-139.3333') {
+                hasClue2 = true;
+            } else if (locationKey === '35.6167-139.3334') {
+                hasClue3 = true;
+            }else if (locationKey === '35.6076-139.3318') {
+                hasClue4 = true;
+            }
     
-    const stampedInfo = `Location: Lat ${location.lat}, Lng ${location.lng}`;
-    document.getElementById('completedStamps').innerHTML += `<p>${stampedInfo}</p>`;
-    displayClueInfo(location);
-    lastDialogTime = currentTime;
-    updateHintButtonStatus();
-}
-
-// 画像を表示する関数
-function displayImage(imageUrl) {
-    const stampedImageElement = document.getElementById('stampedImage');
-    stampedImageElement.innerHTML = `<img src="${imageUrl}" alt="Stamped Image" style="max-width: 100%;">`;
-}
+            const stampedInfo = `Location: Lat ${location.lat}, Lng ${location.lng}`;
+            document.getElementById('completedStamps').innerHTML += `<p>${stampedInfo}</p>`;
+            displayClueInfo(location);
+            lastDialogTime = currentTime;
+            updateHintButtonStatus();
+        }
 
         function checkTrace() {
             // パスワード（痕跡）の入力値を取得
