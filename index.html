@@ -140,58 +140,89 @@
         .passform{
             justify-content: space-around;
         }
+        .zyunban{
+            text-align: center;
+        }
+        .alien-popup1, .alien-popup2, .alien-popup3 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .alien-popup1 img, .alien-popup2 img, .alien-popup3 img {
+            width: 80%;
+            max-width: 400px;
+            border-radius: 10px;
+        }
     </style>
 </head>
 
 <body>
     <!--ゲーム画面-->
     <h1><img class="Stytle" src="invader-hunt@2x.png" alt="画像の説明"></h1>
-   
-    
 
-    <div id="completedStamps"></div>
-    <!--基本表示マップ-->
-    <a href="https://x.com/utyuzin2023/status/1744349178422231471?s=20" target="_blank">
-    <img class="mapB" src="TZU基本MAP_アートボード 1.png" alt="全体マップ"></a>
-    <img class="alien" src="alien2.png" alt="画像の説明">
-    <div id="completedStamps"></div>
+<div id="completedStamps"></div>
 
-     <!--パスワード入力-->
-    <div id="passform">
-        <label for="pass">痕跡 (3文字)</label>
-        <input type="password" id="sAE" name="password" minlength="8" required />
-        <input type="button" value="チェック" onclick="checkTrace()" />
-    </div>
+<!-- 基本表示マップ -->
+<a href="https://x.com/utyuzin2023/status/1744349178422231471?s=20" target="_blank">
+    <img class="mapB" src="TZU基本MAP_アートボード 1.png" alt="全体マップ">
+</a>
+<img class="alien" src="alien2.png" alt="画像の説明">
+<div id="completedStamps"></div>
 
+<!-- パスワード入力 -->
+<div id="passform" class="passform">
+    <label for="sAE">痕跡 (3文字)</label>
+    <input type="password" id="sAE" name="password" minlength="3" required />
+    <input type="button" value="チェック" onclick="checkTrace()" />
+</div>
 
-    <!--スタート確認画面-->
-    <div id="gameStartPopup" style="display: block;">
-        <div class="popup-content">
-            <div class="overlay-content">
-                <img class="Btytle" src="invader-hunt@2x.png" alt="画像の説明">
-                <p>ゲームを始めますか？</p>
-                <button onclick="startGame()">OK</button>
-            </div>
+<!-- スタート確認画面 -->
+<div id="gameStartPopup">
+    <div class="popup-content">
+        <div class="overlay-content">
+            <img class="Btytle" src="invader-hunt@2x.png" alt="画像の説明">
+            <p>ゲームを始めますか？</p>
+            <button onclick="startGame()">OK</button>
         </div>
     </div>
+</div>
 
-    <div>
-        <p>1,2,3,4,5,6,7=A,B,C,D,E,F,G</p>
-    </div>
-    
-    
+<div class="zyunban">
+    <p>1,2,3,4,5,6,7=A,B,C,D,E,F,G</p>
+</div>
 
-    <!--ヒントボタン-->
-    <div id="hintButtons">
-        <a id="hint1Button" href="https://x.com/utyuzin2023/status/1735751507759468580?s=20" target="_blank">ヒント1</a>
-        <a id="hint2Button" href="https://x.com/utyuzin2023/status/1735751932134953319?s=20" target="_blank">ヒント2</a>
-        <a id="hint3Button" href="https://x.com/utyuzin2023/status/1735752028020937006?s=20" target="_blank">ヒント3</a>
-    </div>
+<!-- ヒントボタン -->
+<div id="hintButtons">
+    <a id="hint1Button" href="https://x.com/utyuzin2023/status/1735751507759468580?s=20" target="_blank">ヒント1</a>
+    <a id="hint2Button" href="https://x.com/utyuzin2023/status/1735751932134953319?s=20" target="_blank">ヒント2</a>
+    <a id="hint3Button" href="https://x.com/utyuzin2023/status/1735752028020937006?s=20" target="_blank">ヒント3</a>
+</div>
 
-    <div id="lastUpdateTime"></div>
+<div id="lastUpdateTime"></div>
+<div id="hintContent"></div>
 
-    <div id="hintContent"></div>
+<!-- エイリアンポップアップ1 -->
+<div class="alien-popup1">
+    <img src="IMG_3636.png" alt="エイリアン1">
+</div>
 
+<!-- エイリアンポップアップ2 -->
+<div class="alien-popup2">
+    <img src="area7.png" alt="エイリアン2">
+</div>
+
+<!-- エイリアンポップアップ3 -->
+<div class="alien-popup3">
+    <img src="area10.png" alt="エイリアン3">
+</div>
     <script>
         let gameStarted = false;
         const stampLocations = [
@@ -334,6 +365,45 @@
         // エイリアンポップアップ表示
         function showAlienPopup() {
             const alienPopup = document.getElementById('alienPopup');
+            alienPopup.style.display = 'flex';
+
+            // エイリアンポップアップを一定時間後に非表示にする（ここでは5秒後）
+            setTimeout(() => {
+                alienPopup.style.display = 'none';
+            }, 5000);
+        }
+
+        // スタンプが押された時の処理
+        function handleStampedLocation(locationKey, location, currentTime) {
+            if (locationKey === '35.6152-139.3349') {
+                hasClue1 = true;
+
+                // エイリアンポップアップ1を表示
+                showAlienPopup(1);
+            } else if (locationKey === '35.6157-139.3338') {
+                hasClue2 = true;
+
+                // エイリアンポップアップ2を表示
+                showAlienPopup(2);
+            } else if (locationKey === '35.6167-139.3334') {
+                hasClue3 = true;
+
+                // エイリアンポップアップ3を表示
+                showAlienPopup(3);
+            } else if (locationKey === '35.6076-139.3318') {
+                hasClue4 = true;
+            }
+
+            const stampedInfo = `Location: Lat ${location.lat}, Lng ${location.lng}`;
+            document.getElementById('completedStamps').innerHTML += `<p>${stampedInfo}</p>`;
+            displayClueInfo(location);
+            lastDialogTime = currentTime;
+            updateHintButtonStatus();
+        }
+
+        // エイリアンポップアップ表示
+        function showAlienPopup(index) {
+            const alienPopup = document.getElementById(`alien-popup${index}`);
             alienPopup.style.display = 'flex';
 
             // エイリアンポップアップを一定時間後に非表示にする（ここでは5秒後）
