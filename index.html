@@ -490,23 +490,35 @@ function deg2rad(deg) {
         }
     
         // スタンプが押された時の処理
-        function handleStampedLocation(locationKey, location, currentTime) {
-            if (locationKey === '35.6152-139.3349') {
-                hasClue1 = true;
-            } else if (locationKey === '35.6157-139.3333') {
-                hasClue2 = true;
-            } else if (locationKey === '35.6167-139.3334') {
-                hasClue3 = true;
-            }else if (locationKey === '35.6076-139.3318') {
-                hasClue4 = true;
-            }
+        // スタンプが押された時の処理
+function handleStampedLocation(locationKey, location, currentTime) {
+    if (locationKey === '35.6152-139.3349') {
+        hasClue1 = true;
+        displayImage('IMG_3636.png'); // 画像のURLを指定
+    } else if (locationKey === '35.6157-139.3333') {
+        hasClue2 = true;
+        displayImage('area7.png'); // 画像のURLを指定
+    } else if (locationKey === '35.6167-139.3334') {
+        hasClue3 = true;
+        displayImage('area10.png'); // 画像のURLを指定
+    } else if (locationKey === '35.6076-139.3318') {
+        hasClue4 = true;
+        displayImage('alien4.jpg'); // 画像のURLを指定
+    }
+
     
-            const stampedInfo = `Location: Lat ${location.lat}, Lng ${location.lng}`;
-            document.getElementById('completedStamps').innerHTML += `<p>${stampedInfo}</p>`;
-            displayClueInfo(location);
-            lastDialogTime = currentTime;
-            updateHintButtonStatus();
-        }
+    const stampedInfo = `Location: Lat ${location.lat}, Lng ${location.lng}`;
+    document.getElementById('completedStamps').innerHTML += `<p>${stampedInfo}</p>`;
+    displayClueInfo(location);
+    lastDialogTime = currentTime;
+    updateHintButtonStatus();
+}
+
+// 画像を表示する関数
+function displayImage(imageUrl) {
+    const stampedImageElement = document.getElementById('stampedImage');
+    stampedImageElement.innerHTML = `<img src="${imageUrl}" alt="Stamped Image" style="max-width: 100%;">`;
+}
 
         function checkTrace() {
             // パスワード（痕跡）の入力値を取得
